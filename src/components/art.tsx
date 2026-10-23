@@ -77,7 +77,7 @@ export function ArtCard({ a, index = 0, onOpen }: { a: Artwork; index?: number; 
         {a.video ? <VideoTileMedia a={a} loaded={loaded} onLoad={() => setLoaded(true)} /> : (
         <motion.img
           layoutId={`art-${a.id}`} src={a.src} alt={`${a.title} — ${getSeries(a.series)?.name}`}
-          width={a.width} height={a.height} loading="lazy" decoding="async" onLoad={() => setLoaded(true)}
+          width={a.width} height={a.height} ref={(el) => { if (el?.complete && el.naturalWidth && !loaded) setLoaded(true); }} loading="lazy" decoding="async" onLoad={() => setLoaded(true)}
           className={`h-full w-full object-cover transition-[transform,opacity,filter] duration-700 ${loaded ? "opacity-100 blur-0" : "opacity-0 blur-md"}`}
         />
         )}

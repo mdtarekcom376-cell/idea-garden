@@ -115,7 +115,7 @@ export function VideoTileMedia({ a, onLoad, loaded }: { a: Artwork; onLoad: () =
     <div className="relative h-full w-full"
       onPointerEnter={(e) => { if (e.pointerType === "mouse") setActive(true); }}
       onPointerLeave={(e) => { if (e.pointerType === "mouse") setActive(false); }}>
-      <img src={media.poster} alt={a.title} width={a.width} height={a.height} loading="lazy" decoding="async" onLoad={onLoad}
+      <img ref={(el) => { if (el?.complete && el.naturalWidth && !loaded) onLoad(); }} src={media.poster} alt={a.title} width={a.width} height={a.height} loading="lazy" decoding="async" onLoad={onLoad}
         className={`h-full w-full object-cover transition-[opacity,filter] duration-700 ${loaded ? "opacity-100 blur-0" : "opacity-0 blur-md"}`} />
       <video ref={ref} muted loop playsInline preload="none" aria-hidden
         className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${active ? "opacity-100" : "opacity-0"}`} />
