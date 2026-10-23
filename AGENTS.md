@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Artwork data is mock content in src/lib/artworks.ts until a backend is added; UI reads only through that module so swapping to a real source stays local.
