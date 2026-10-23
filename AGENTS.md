@@ -10,3 +10,5 @@
 <!-- LOVABLE:END -->
 
 - Artwork data is mock content in src/lib/artworks.ts until a backend is added; UI reads only through that module so swapping to a real source stays local.
+
+- Animations go through src/components/motion (wrappers + easing tokens) and src/components/effects.tsx (global cursor, splash, tooltips, smooth scroll); keeps motion consistent and reduced-motion handled in one place.
