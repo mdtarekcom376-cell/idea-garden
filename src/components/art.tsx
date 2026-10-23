@@ -82,8 +82,6 @@ export function ArtCard({ a, index = 0, onOpen }: { a: Artwork; index?: number; 
         />
         )}
       </Link>
-/span>
-      )}
       <figcaption className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-overlay/75 to-transparent p-4 opacity-100 transition-opacity duration-500 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
         <p className="font-script text-xl leading-tight text-primary-foreground transition-[transform,opacity] duration-500 md:translate-y-2 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 md:text-2xl">{a.title}</p>
         <p className="text-xs text-primary-foreground/80">{getSeries(a.series)?.name}</p>
