@@ -35,6 +35,7 @@ export function GlowCursor() {
   useEffect(() => {
     if (!finePointer() || reduced()) return;
     setOn(true);
+    document.documentElement.classList.add("has-glow-cursor");
     let x = -100, y = -100, cx = x, cy = y, raf = 0;
     const move = (e: PointerEvent) => {
       x = e.clientX; y = e.clientY;
@@ -47,7 +48,7 @@ export function GlowCursor() {
     };
     loop();
     window.addEventListener("pointermove", move, { passive: true });
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("pointermove", move); };
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("pointermove", move); document.documentElement.classList.remove("has-glow-cursor"); };
   }, []);
   if (!on) return null;
   return (
