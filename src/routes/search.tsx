@@ -5,7 +5,7 @@ import { EmptyState, PageHero, SectionHeading } from "@/components/kit";
 import { SearchPill } from "@/components/SearchPill";
 
 export const Route = createFileRoute("/search")({
-  validateSearch: (s: Record<string, unknown>): { q?: string } => ({ q: typeof s["q"] === "string" ? s["q"] : undefined }),
+  validateSearch: (s: Record<string, unknown>): { q?: string } => (typeof s["q"] === "string" ? { q: s["q"] } : {}),
   head: () => ({
     meta: [
       { title: "Search — Artsstory" },
@@ -27,7 +27,7 @@ function SearchPage() {
   const chars = term ? characters.filter((c) => c.name.toLowerCase().includes(term)) : [];
   return (
     <main>
-      <PageHero eyebrow="Search" title={term ? `"${q}"` : "Find your"} accent={term ? undefined : "magic"}>
+      <PageHero eyebrow="Search" title={term ? `"${q}"` : "Find your"} {...(term ? {} : { accent: "magic" })}>
         <SearchPill key={q} initial={q} autoFocus={!term} className="max-w-xl" />
       </PageHero>
       <div className="container-page pt-10">
