@@ -63,7 +63,7 @@ export function ValidatedForm({ fields, schema, submitLabel, successTitle, succe
           </div>
         );
       })}
-      <button disabled={busy} className="btn-primary btn-shine w-full sm:w-auto">{busy ? "Sending…" : submitLabel}</button>
+      <button disabled={busy} className="btn-primary btn-shine btn-arrow w-full sm:w-auto">{busy ? "Sending…" : submitLabel}</button>
     </form>
   );
 }

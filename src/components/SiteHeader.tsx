@@ -1,3 +1,5 @@
+import { HoverFlip, spring } from "@/components/motion";
+import { petalBurst } from "@/components/effects";
 import { Link } from "@tanstack/react-router";
 import { motion, useMotionValueEvent, useScroll } from "motion/react";
 import { useEffect, useState } from "react";
@@ -23,7 +25,7 @@ function ThemeToggle() {
     localStorage.setItem("artsstory:theme", d ? "dark" : "light");
   };
   return (
-    <button onClick={flip} aria-label={dark ? "Switch to light theme" : "Switch to dark theme"} className="icon-btn">
+    <button onClick={flip} aria-label={dark ? "Switch to light theme" : "Switch to dark theme"} className="icon-btn icon-tip">
       {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
     </button>
   );
@@ -42,24 +44,26 @@ export function SiteHeader() {
   return (
     <>
       <motion.header
-        animate={{ y: hidden ? -100 : 0 }} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed inset-x-0 top-0 z-50 border-b transition-colors ${scrolled ? "glass" : "border-transparent"}`}
+        initial={{ y: -80, opacity: 0 }} animate={{ y: hidden ? -100 : 0, opacity: 1 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        className={`fixed inset-x-0 top-0 z-50 border-b transition-colors ${scrolled ? "glass-strong" : "border-transparent"}`}
       >
         <div className="container-page flex h-16 items-center justify-between gap-4">
           <Link to="/" className="flex shrink-0 items-center gap-2" aria-label="Artsstory home">
-            <Sparkles className="h-5 w-5 text-primary" />
+            <motion.span aria-hidden whileHover={{ rotate: 20, scale: 1.15 }} whileTap={{ scale: 0.8, rotate: 180 }} transition={spring}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); const r = e.currentTarget.getBoundingClientRect(); petalBurst(r.left + r.width / 2, r.top + r.height / 2, 36); }}
+              className="grid place-items-center"><Sparkles className="h-5 w-5 text-primary" /></motion.span>
             <span className="font-display text-lg tracking-[0.25em] uppercase sm:text-xl">Artsstory</span>
           </Link>
           <nav className="hidden items-center gap-6 lg:flex" aria-label="Main">
             {nav.map((n) => (
-              <Link key={n.to} to={n.to} className="nav-link" activeProps={{ className: "nav-link-active" }} activeOptions={{ exact: n.to === "/" }}>{n.label}</Link>
+              <Link key={n.to} to={n.to} className="nav-link" activeProps={{ className: "nav-link-active" }} activeOptions={{ exact: n.to === "/" }}><HoverFlip text={n.label} /></Link>
             ))}
           </nav>
           <div className="flex items-center gap-2">
-            <Link to="/search" search={{ q: "" }} aria-label="Search" className="icon-btn hidden sm:grid"><Search className="h-4 w-4" /></Link>
-            <Link to="/saved" aria-label="Saved" className="icon-btn hidden sm:grid"><Bookmark className="h-4 w-4" /></Link>
+            <Link to="/search" search={{ q: "" }} aria-label="Search" className="icon-btn icon-tip hidden sm:grid"><Search className="h-4 w-4" /></Link>
+            <Link to="/saved" aria-label="Saved" className="icon-btn icon-tip hidden sm:grid"><Bookmark className="h-4 w-4" /></Link>
             <ThemeToggle />
-            <button className="icon-btn lg:hidden" aria-label="Open menu" aria-expanded={menu} onClick={() => setMenu(true)}><Menu className="h-4 w-4" /></button>
+            <button className="icon-btn icon-tip lg:hidden" aria-label="Open menu" aria-expanded={menu} onClick={() => setMenu(true)}><Menu className="h-4 w-4" /></button>
           </div>
         </div>
       </motion.header>
@@ -114,7 +118,7 @@ export function NewsletterForm() {
     >
       <label className="sr-only" htmlFor="nl-email">Email</label>
       <input id="nl-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" className="input-pill flex-1" />
-      <button className="btn-primary btn-shine">Subscribe</button>
+      <button className="btn-primary btn-shine btn-arrow">Subscribe</button>
     </form>
   );
 }

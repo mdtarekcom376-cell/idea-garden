@@ -59,7 +59,7 @@ function Hero() {
             Hand-picked illustrations and cinematic clips from the worlds you love — quality over quantity, always credited.
           </motion.p>
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ ease, duration: 0.7, delay: 0.75 }} className="mt-8 flex flex-wrap gap-3">
-            <Link to="/gallery" className="btn-primary btn-shine group px-7">Explore the gallery <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>
+            <Link to="/gallery" className="btn-primary btn-shine btn-arrow group px-7">Explore the gallery <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>
             <Link to="/collections" className="btn-ghost">Collections</Link>
           </motion.div>
         </motion.div>
@@ -118,7 +118,7 @@ function Index() {
               Every piece is chosen by hand for colour, mood and craft. From sakura kingdoms to neon cities, we gather the moments that make you stop scrolling.
             </p>
             <p className="font-script mt-4 text-3xl text-primary">"quality over quantity"</p>
-            <Link to="/gallery" className="btn-primary btn-shine mt-6">Browse {artworks.length} artworks <ArrowRight className="h-4 w-4" /></Link>
+            <Link to="/gallery" className="btn-primary btn-shine btn-arrow mt-6">Browse {artworks.length} artworks <ArrowRight className="h-4 w-4" /></Link>
           </FadeUp>
           <div className="grid grid-cols-2 gap-3 md:gap-5">
             {editorial.map((a, i) => (
