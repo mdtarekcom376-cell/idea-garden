@@ -1,37 +1,40 @@
 import { HoverFlip, spring } from "@/components/motion";
 import { petalBurst } from "@/components/effects";
 import { Link } from "@tanstack/react-router";
-import { motion, useMotionValueEvent, useScroll } from "motion/react";
+import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
 import { useEffect, useState } from "react";
 import { Sparkles, Home, Compass, Search, Bookmark, Menu, Moon, Sun, X, Instagram, Twitter, Youtube } from "lucide-react";
 import { toast } from "sonner";
+import { setTheme, useIsDark } from "@/lib/theme";
+import { useT, type MessageKey } from "@/lib/i18n";
 import { z } from "zod";
 
 const nav = [
-  { to: "/", label: "Home" },
-  { to: "/gallery", label: "Gallery" },
-  { to: "/series", label: "Series" },
-  { to: "/characters", label: "Characters" },
-  { to: "/collections", label: "Collections" },
-  { to: "/about", label: "About" },
+  { to: "/", label: "nav.home" as MessageKey },
+  { to: "/gallery", label: "nav.gallery" as MessageKey },
+  { to: "/series", label: "nav.series" as MessageKey },
+  { to: "/characters", label: "nav.characters" as MessageKey },
+  { to: "/collections", label: "nav.collections" as MessageKey },
+  { to: "/about", label: "nav.about" as MessageKey },
 ] as const;
 
 function ThemeToggle() {
-  const [dark, setDark] = useState(false);
-  useEffect(() => { setDark(document.documentElement.classList.contains("dark")); }, []);
-  const flip = () => {
-    const d = !dark; setDark(d);
-    document.documentElement.classList.toggle("dark", d);
-    localStorage.setItem("artsstory:theme", d ? "dark" : "light");
-  };
+  const dark = useIsDark();
+  const tr = useT();
   return (
-    <button onClick={flip} aria-label={dark ? "Switch to light theme" : "Switch to dark theme"} className="icon-btn icon-tip">
-      {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-    </button>
+    <motion.button whileTap={{ scale: 0.85 }} onClick={() => setTheme(dark ? "light" : "dark")} aria-label={dark ? tr("theme.toLight") : tr("theme.toDark")} className="icon-btn icon-tip overflow-hidden">
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.span key={dark ? "sun" : "moon"} className="grid place-items-center"
+          initial={{ rotate: -90, scale: 0, opacity: 0 }} animate={{ rotate: 0, scale: 1, opacity: 1 }} exit={{ rotate: 90, scale: 0, opacity: 0 }} transition={spring}>
+          {dark ? <Sun className="h-4 w-4 text-gold" /> : <Moon className="h-4 w-4" />}
+        </motion.span>
+      </AnimatePresence>
+    </motion.button>
   );
 }
 
 export function SiteHeader() {
+  const tr = useT();
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -48,22 +51,22 @@ export function SiteHeader() {
         className={`fixed inset-x-0 top-0 z-50 border-b transition-colors ${scrolled ? "glass-strong" : "border-transparent"}`}
       >
         <div className="container-page flex h-16 items-center justify-between gap-4">
-          <Link to="/" className="flex shrink-0 items-center gap-2" aria-label="Artsstory home">
+          <Link to="/" className="flex shrink-0 items-center gap-2" aria-label={tr("nav.homeLabel")}>
             <motion.span aria-hidden whileHover={{ rotate: 20, scale: 1.15 }} whileTap={{ scale: 0.8, rotate: 180 }} transition={spring}
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); const r = e.currentTarget.getBoundingClientRect(); petalBurst(r.left + r.width / 2, r.top + r.height / 2, 36); }}
               className="grid place-items-center"><Sparkles className="h-5 w-5 text-primary" /></motion.span>
             <span className="font-display text-lg tracking-[0.25em] uppercase sm:text-xl">Artsstory</span>
           </Link>
-          <nav className="hidden items-center gap-6 lg:flex" aria-label="Main">
+          <nav className="hidden items-center gap-6 lg:flex" aria-label={tr("nav.main")}>
             {nav.map((n) => (
-              <Link key={n.to} to={n.to} className="nav-link" activeProps={{ className: "nav-link-active" }} activeOptions={{ exact: n.to === "/" }}><HoverFlip text={n.label} /></Link>
+              <Link key={n.to} to={n.to} className="nav-link" activeProps={{ className: "nav-link-active" }} activeOptions={{ exact: n.to === "/" }}><HoverFlip text={tr(n.label)} /></Link>
             ))}
           </nav>
           <div className="flex items-center gap-2">
-            <Link to="/search" search={{ q: "" }} aria-label="Search" className="icon-btn icon-tip hidden sm:grid"><Search className="h-4 w-4" /></Link>
-            <Link to="/saved" aria-label="Saved" className="icon-btn icon-tip hidden sm:grid"><Bookmark className="h-4 w-4" /></Link>
+            <Link to="/search" search={{ q: "" }} aria-label={tr("nav.search")} className="icon-btn icon-tip hidden sm:grid"><Search className="h-4 w-4" /></Link>
+            <Link to="/saved" aria-label={tr("nav.saved")} className="icon-btn icon-tip hidden sm:grid"><Bookmark className="h-4 w-4" /></Link>
             <ThemeToggle />
-            <button className="icon-btn icon-tip lg:hidden" aria-label="Open menu" aria-expanded={menu} onClick={() => setMenu(true)}><Menu className="h-4 w-4" /></button>
+            <button className="icon-btn icon-tip lg:hidden" aria-label={tr("nav.openMenu")} aria-expanded={menu} onClick={() => setMenu(true)}><Menu className="h-4 w-4" /></button>
           </div>
         </div>
       </motion.header>
@@ -74,15 +77,16 @@ export function SiteHeader() {
 }
 
 function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const tr = useT();
   if (!open) return null;
-  const extra = [{ to: "/saved", label: "Saved" }, { to: "/contact", label: "Contact" }, { to: "/dmca", label: "DMCA / Takedown" }] as const;
+  const extra = [{ to: "/saved", label: "nav.saved" as MessageKey }, { to: "/contact", label: "nav.contact" as MessageKey }, { to: "/dmca", label: "nav.dmca" as MessageKey }] as const;
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 z-[70] bg-hero p-6" role="dialog" aria-modal aria-label="Menu">
-      <div className="flex justify-end"><button autoFocus className="icon-btn" aria-label="Close menu" onClick={onClose}><X className="h-4 w-4" /></button></div>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 z-[70] bg-hero p-6" role="dialog" aria-modal aria-label={tr("nav.menu")}>
+      <div className="flex justify-end"><button autoFocus className="icon-btn" aria-label={tr("nav.closeMenu")} onClick={onClose}><X className="h-4 w-4" /></button></div>
       <nav className="mt-6 flex flex-col gap-1">
         {[...nav, ...extra].map((n, i) => (
           <motion.div key={n.to} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}>
-            <Link to={n.to} onClick={onClose} className="font-display block py-2 text-4xl" activeProps={{ className: "text-primary" }} activeOptions={{ exact: n.to === "/" }}>{n.label}</Link>
+            <Link to={n.to} onClick={onClose} className="font-display block py-2 text-4xl" activeProps={{ className: "text-primary" }} activeOptions={{ exact: n.to === "/" }}>{tr(n.label)}</Link>
           </motion.div>
         ))}
       </nav>
@@ -91,14 +95,15 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
 }
 
 function MobileTabBar({ onMenu }: { onMenu: () => void }) {
+  const tr = useT();
   const cls = "flex min-h-12 min-w-14 flex-col items-center justify-center gap-0.5 text-[11px] text-muted-foreground";
   return (
-    <nav className="glass fixed inset-x-0 bottom-0 z-50 flex justify-around border-t pb-[env(safe-area-inset-bottom)] md:hidden" aria-label="Mobile">
-      <Link to="/" className={cls} activeProps={{ className: "text-primary" }} activeOptions={{ exact: true }}><Home className="h-5 w-5" />Home</Link>
-      <Link to="/gallery" className={cls} activeProps={{ className: "text-primary" }}><Compass className="h-5 w-5" />Explore</Link>
-      <Link to="/search" search={{ q: "" }} className={cls} activeProps={{ className: "text-primary" }}><Search className="h-5 w-5" />Search</Link>
-      <Link to="/saved" className={cls} activeProps={{ className: "text-primary" }}><Bookmark className="h-5 w-5" />Saved</Link>
-      <button onClick={onMenu} className={cls}><Menu className="h-5 w-5" />Menu</button>
+    <nav className="glass fixed inset-x-0 bottom-0 z-50 flex justify-around border-t pb-[env(safe-area-inset-bottom)] md:hidden" aria-label={tr("nav.mobile")}>
+      <Link to="/" className={cls} activeProps={{ className: "text-primary" }} activeOptions={{ exact: true }}><Home className="h-5 w-5" />{tr("nav.home")}</Link>
+      <Link to="/gallery" className={cls} activeProps={{ className: "text-primary" }}><Compass className="h-5 w-5" />{tr("nav.explore")}</Link>
+      <Link to="/search" search={{ q: "" }} className={cls} activeProps={{ className: "text-primary" }}><Search className="h-5 w-5" />{tr("nav.search")}</Link>
+      <Link to="/saved" className={cls} activeProps={{ className: "text-primary" }}><Bookmark className="h-5 w-5" />{tr("nav.saved")}</Link>
+      <button onClick={onMenu} className={cls}><Menu className="h-5 w-5" />{tr("nav.menu")}</button>
     </nav>
   );
 }

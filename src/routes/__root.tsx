@@ -14,6 +14,9 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
 import { Petals } from "@/components/Petals";
+import { themeInitScript, watchSystemTheme } from "@/lib/theme";
+import { initLocale } from "@/lib/i18n";
+import { registerServiceWorker } from "@/lib/pwa";
 import { MotionConfig, motion } from "motion/react";
 import { useLocation } from "@tanstack/react-router";
 import { SmoothScroll, GlowCursor, Splash, IconTooltips } from "@/components/effects";
@@ -84,6 +87,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "theme-color", content: "#f06ba0", media: "(prefers-color-scheme: light)" },
+      { name: "theme-color", content: "#221828", media: "(prefers-color-scheme: dark)" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
       { title: "Artsstory" },
       { name: "description", content: "Curated HD & 4K anime art gallery." },
       { property: "og:type", content: "website" },
@@ -95,6 +101,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Inter:wght@400;500;600;700&display=swap" },
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/icons/icon-192.png" },
     ],
   }),
   shellComponent: RootShell,
@@ -108,7 +116,7 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
-        <script dangerouslySetInnerHTML={{ __html: "try{if(localStorage.getItem('artsstory:theme')==='dark')document.documentElement.classList.add('dark')}catch(e){}" }} />
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body>
         {children}
@@ -120,6 +128,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  useEffect(() => { initLocale(); registerServiceWorker(); return watchSystemTheme(); }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
