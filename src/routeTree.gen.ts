@@ -10,33 +10,258 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as CharactersRouteImport } from './routes/characters'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DmcaRouteImport } from './routes/dmca'
+import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as SavedRouteImport } from './routes/saved'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as ArtSlugRouteImport } from './routes/art.$slug'
+import { Route as CharacterSlugRouteImport } from './routes/character.$slug'
+import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
+import { Route as CollectionsSlugRouteImport } from './routes/collections.$slug'
+import { Route as SeriesIndexRouteImport } from './routes/series.index'
+import { Route as SeriesSlugRouteImport } from './routes/series.$slug'
+import { Route as TagSlugRouteImport } from './routes/tag.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CharactersRoute = CharactersRouteImport.update({
+  id: '/characters',
+  path: '/characters',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DmcaRoute = DmcaRouteImport.update({
+  id: '/dmca',
+  path: '/dmca',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SavedRoute = SavedRouteImport.update({
+  id: '/saved',
+  path: '/saved',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArtSlugRoute = ArtSlugRouteImport.update({
+  id: '/art/$slug',
+  path: '/art/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CharacterSlugRoute = CharacterSlugRouteImport.update({
+  id: '/character/$slug',
+  path: '/character/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectionsIndexRoute = CollectionsIndexRouteImport.update({
+  id: '/collections/',
+  path: '/collections/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectionsSlugRoute = CollectionsSlugRouteImport.update({
+  id: '/collections/$slug',
+  path: '/collections/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SeriesIndexRoute = SeriesIndexRouteImport.update({
+  id: '/series/',
+  path: '/series/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SeriesSlugRoute = SeriesSlugRouteImport.update({
+  id: '/series/$slug',
+  path: '/series/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TagSlugRoute = TagSlugRouteImport.update({
+  id: '/tag/$slug',
+  path: '/tag/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/characters': typeof CharactersRoute
+  '/contact': typeof ContactRoute
+  '/dmca': typeof DmcaRoute
+  '/gallery': typeof GalleryRoute
+  '/privacy': typeof PrivacyRoute
+  '/saved': typeof SavedRoute
+  '/search': typeof SearchRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
+  '/art/$slug': typeof ArtSlugRoute
+  '/character/$slug': typeof CharacterSlugRoute
+  '/collections/$slug': typeof CollectionsSlugRoute
+  '/series/$slug': typeof SeriesSlugRoute
+  '/tag/$slug': typeof TagSlugRoute
+  '/collections/': typeof CollectionsIndexRoute
+  '/series/': typeof SeriesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/characters': typeof CharactersRoute
+  '/contact': typeof ContactRoute
+  '/dmca': typeof DmcaRoute
+  '/gallery': typeof GalleryRoute
+  '/privacy': typeof PrivacyRoute
+  '/saved': typeof SavedRoute
+  '/search': typeof SearchRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
+  '/art/$slug': typeof ArtSlugRoute
+  '/character/$slug': typeof CharacterSlugRoute
+  '/collections/$slug': typeof CollectionsSlugRoute
+  '/series/$slug': typeof SeriesSlugRoute
+  '/tag/$slug': typeof TagSlugRoute
+  '/collections': typeof CollectionsIndexRoute
+  '/series': typeof SeriesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/characters': typeof CharactersRoute
+  '/contact': typeof ContactRoute
+  '/dmca': typeof DmcaRoute
+  '/gallery': typeof GalleryRoute
+  '/privacy': typeof PrivacyRoute
+  '/saved': typeof SavedRoute
+  '/search': typeof SearchRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
+  '/art/$slug': typeof ArtSlugRoute
+  '/character/$slug': typeof CharacterSlugRoute
+  '/collections/$slug': typeof CollectionsSlugRoute
+  '/series/$slug': typeof SeriesSlugRoute
+  '/tag/$slug': typeof TagSlugRoute
+  '/collections/': typeof CollectionsIndexRoute
+  '/series/': typeof SeriesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/characters'
+    | '/contact'
+    | '/dmca'
+    | '/gallery'
+    | '/privacy'
+    | '/saved'
+    | '/search'
+    | '/sitemap.xml'
+    | '/terms'
+    | '/art/$slug'
+    | '/character/$slug'
+    | '/collections/$slug'
+    | '/series/$slug'
+    | '/tag/$slug'
+    | '/collections/'
+    | '/series/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/characters'
+    | '/contact'
+    | '/dmca'
+    | '/gallery'
+    | '/privacy'
+    | '/saved'
+    | '/search'
+    | '/sitemap.xml'
+    | '/terms'
+    | '/art/$slug'
+    | '/character/$slug'
+    | '/collections/$slug'
+    | '/series/$slug'
+    | '/tag/$slug'
+    | '/collections'
+    | '/series'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/characters'
+    | '/contact'
+    | '/dmca'
+    | '/gallery'
+    | '/privacy'
+    | '/saved'
+    | '/search'
+    | '/sitemap.xml'
+    | '/terms'
+    | '/art/$slug'
+    | '/character/$slug'
+    | '/collections/$slug'
+    | '/series/$slug'
+    | '/tag/$slug'
+    | '/collections/'
+    | '/series/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  CharactersRoute: typeof CharactersRoute
+  ContactRoute: typeof ContactRoute
+  DmcaRoute: typeof DmcaRoute
+  GalleryRoute: typeof GalleryRoute
+  PrivacyRoute: typeof PrivacyRoute
+  SavedRoute: typeof SavedRoute
+  SearchRoute: typeof SearchRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermsRoute: typeof TermsRoute
+  ArtSlugRoute: typeof ArtSlugRoute
+  CharacterSlugRoute: typeof CharacterSlugRoute
+  CollectionsSlugRoute: typeof CollectionsSlugRoute
+  SeriesSlugRoute: typeof SeriesSlugRoute
+  TagSlugRoute: typeof TagSlugRoute
+  CollectionsIndexRoute: typeof CollectionsIndexRoute
+  SeriesIndexRoute: typeof SeriesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +273,147 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/characters': {
+      id: '/characters'
+      path: '/characters'
+      fullPath: '/characters'
+      preLoaderRoute: typeof CharactersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dmca': {
+      id: '/dmca'
+      path: '/dmca'
+      fullPath: '/dmca'
+      preLoaderRoute: typeof DmcaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saved': {
+      id: '/saved'
+      path: '/saved'
+      fullPath: '/saved'
+      preLoaderRoute: typeof SavedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/art/$slug': {
+      id: '/art/$slug'
+      path: '/art/$slug'
+      fullPath: '/art/$slug'
+      preLoaderRoute: typeof ArtSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/character/$slug': {
+      id: '/character/$slug'
+      path: '/character/$slug'
+      fullPath: '/character/$slug'
+      preLoaderRoute: typeof CharacterSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/': {
+      id: '/collections/'
+      path: '/collections'
+      fullPath: '/collections/'
+      preLoaderRoute: typeof CollectionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/$slug': {
+      id: '/collections/$slug'
+      path: '/collections/$slug'
+      fullPath: '/collections/$slug'
+      preLoaderRoute: typeof CollectionsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/series/': {
+      id: '/series/'
+      path: '/series'
+      fullPath: '/series/'
+      preLoaderRoute: typeof SeriesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/series/$slug': {
+      id: '/series/$slug'
+      path: '/series/$slug'
+      fullPath: '/series/$slug'
+      preLoaderRoute: typeof SeriesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tag/$slug': {
+      id: '/tag/$slug'
+      path: '/tag/$slug'
+      fullPath: '/tag/$slug'
+      preLoaderRoute: typeof TagSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  CharactersRoute: CharactersRoute,
+  ContactRoute: ContactRoute,
+  DmcaRoute: DmcaRoute,
+  GalleryRoute: GalleryRoute,
+  PrivacyRoute: PrivacyRoute,
+  SavedRoute: SavedRoute,
+  SearchRoute: SearchRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TermsRoute: TermsRoute,
+  ArtSlugRoute: ArtSlugRoute,
+  CharacterSlugRoute: CharacterSlugRoute,
+  CollectionsSlugRoute: CollectionsSlugRoute,
+  SeriesSlugRoute: SeriesSlugRoute,
+  TagSlugRoute: TagSlugRoute,
+  CollectionsIndexRoute: CollectionsIndexRoute,
+  SeriesIndexRoute: SeriesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
