@@ -87,7 +87,7 @@ export function Splash() {
 
 /** Animated tooltip for every icon button, driven by its aria-label. */
 export function IconTooltips() {
-  const [tip, setTip] = useState<{ text: string; x: number; y: number } | null>(null);
+  const [tip, setTip] = useState<{ text: string; x: number; y: number; below: boolean } | null>(null);
   useEffect(() => {
     const sel = ".icon-tip, [data-tip]";
     let el: Element | null = null;
@@ -98,7 +98,8 @@ export function IconTooltips() {
       const text = t?.getAttribute("data-tip") ?? t?.getAttribute("aria-label");
       if (!t || !text) return setTip(null);
       const r = t.getBoundingClientRect();
-      setTip({ text, x: r.left + r.width / 2, y: r.top });
+      const below = r.top < 56;
+      setTip({ text, x: r.left + r.width / 2, y: below ? r.bottom + 8 : r.top - 8, below });
     };
     const over = (e: Event) => show(e.target);
     const hide = () => { el = null; setTip(null); };
@@ -116,7 +117,7 @@ export function IconTooltips() {
   return (
     <AnimatePresence>
       {tip && (
-        <motion.div key={tip.text + tip.x} role="tooltip" className="tooltip-bubble pointer-events-none fixed z-[95]" style={{ left: tip.x, top: tip.y - 8, translateX: "-50%", translateY: "-100%" }}
+        <motion.div key={tip.text + tip.x} role="tooltip" className="tooltip-bubble pointer-events-none fixed z-[95]" style={{ left: tip.x, top: tip.y, translateX: "-50%", translateY: tip.below ? "0%" : "-100%" }}
           initial={{ opacity: 0, scale: 0.85, y: 4 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }} transition={spring}>
           {tip.text}
         </motion.div>
