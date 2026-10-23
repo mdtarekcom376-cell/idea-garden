@@ -48,10 +48,10 @@ function ArtPage() {
   return (
     <main className="pt-20">
       <section className="container-page grid gap-8 lg:grid-cols-[1fr_24rem] lg:gap-12">
-        <div className="relative flex h-[60vh] items-center justify-center rounded-[2rem] p-3 md:h-[80vh]" style={{ backgroundColor: a.dominant_color }}>
+        <div className={`relative flex items-center justify-center rounded-[2rem] p-3 md:h-[80vh] ${a.video ? "h-auto py-14 md:py-3" : "h-[60vh]"}`} style={{ backgroundColor: a.dominant_color }}>
           <ZoomImage key={a.id} a={a} layout={false} />
-          <Link to="/art/$slug" params={{ slug: prev.slug }} aria-label={`Previous: ${prev.title}`} className="icon-btn-glass absolute left-3 top-1/2 -translate-y-1/2"><ChevronLeft className="h-5 w-5" /></Link>
-          <Link to="/art/$slug" params={{ slug: next.slug }} aria-label={`Next: ${next.title}`} className="icon-btn-glass absolute right-3 top-1/2 -translate-y-1/2"><ChevronRight className="h-5 w-5" /></Link>
+          <Link to="/art/$slug" params={{ slug: prev.slug }} aria-label={`Previous: ${prev.title}`} className="icon-btn-glass icon-tip absolute left-3 top-1/2 -translate-y-1/2 max-md:top-7"><ChevronLeft className="h-5 w-5" /></Link>
+          <Link to="/art/$slug" params={{ slug: next.slug }} aria-label={`Next: ${next.title}`} className="icon-btn-glass icon-tip absolute right-3 top-1/2 -translate-y-1/2 max-md:top-7"><ChevronRight className="h-5 w-5" /></Link>
         </div>
         <aside className="lg:py-6"><MetaPanel a={a} /></aside>
       </section>

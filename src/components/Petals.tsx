@@ -25,7 +25,7 @@ export function Petals() {
     const dpr = Math.min(window.devicePixelRatio || 1, mobile ? 1 : 1.5);
     const resize = () => { w = window.innerWidth; h = window.innerHeight; c.width = w * dpr; c.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
     resize();
-    const base = Math.round((mobile ? 14 : 30) * (lowEnd ? 0.5 : 1));
+    const base = Math.round((mobile ? 8 : 30) * (lowEnd ? 0.5 : 1));
     const make = (spark: boolean): P => ({
       x: Math.random() * w, y: Math.random() * h, s: spark ? 1.5 + Math.random() * 2 : 6 + Math.random() * 8,
       vy: spark ? 0.15 + Math.random() * 0.3 : 0.4 + Math.random() * 0.8, vx: Math.random() * 0.6 - 0.3,
