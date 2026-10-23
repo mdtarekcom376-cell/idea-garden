@@ -5,6 +5,8 @@ import { Heart, Bookmark, Play, X, ChevronLeft, ChevronRight, Download, Share2, 
 import { toast } from "sonner";
 import { type Artwork, getSeries, getCharacter, resolutionOf } from "@/data";
 import { toggleIn, useList } from "@/lib/library";
+import { t, useT } from "@/lib/i18n";
+import { VideoPlayer, VideoTileMedia } from "@/components/video";
 import { ease } from "@/components/kit";
 import { spring } from "@/components/motion";
 import { petalBurst } from "@/components/effects";
@@ -14,7 +16,7 @@ export async function shareArtwork(a: Artwork) {
   const url = `${window.location.origin}/art/${a.slug}`;
   if (navigator.share) { try { await navigator.share({ title: a.title, url }); return; } catch { /* cancelled */ } }
   await navigator.clipboard?.writeText(url);
-  toast.success("Link copied");
+  toast.success(t("art.linkCopied"));
 }
 
 export function LikeButton({ a, size = "sm" }: { a: Artwork; size?: "sm" | "lg" }) {
@@ -24,7 +26,7 @@ export function LikeButton({ a, size = "sm" }: { a: Artwork; size?: "sm" | "lg" 
     <motion.button
       whileTap={{ scale: 1.35 }} transition={spring}
       onClick={(e) => { e.stopPropagation(); const now = toggleIn("likes", a.id); if (now) { const r = e.currentTarget.getBoundingClientRect(); petalBurst(r.left + r.width / 2, r.top + r.height / 2, 10); } }}
-      aria-label={on ? "Unlike" : "Like"} aria-pressed={on}
+      aria-label={on ? t("art.unlike") : t("art.like")} aria-pressed={on}
       className={size === "sm" ? "icon-btn-glass icon-tip" : "icon-btn icon-tip"}
     >
       <motion.span key={String(on)} initial={{ scale: on ? 0.4 : 1 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 500, damping: 12 }} className="grid place-items-center"><Heart className={`h-4 w-4 ${on ? "fill-primary text-primary" : ""}`} /></motion.span>
@@ -38,8 +40,8 @@ export function SaveButton({ a, size = "sm" }: { a: Artwork; size?: "sm" | "lg" 
   return (
     <motion.button
       whileTap={{ scale: 1.25 }}
-      onClick={(e) => { e.stopPropagation(); const now = toggleIn("saved", a.id); toast(now ? "Saved to favourites" : "Removed from favourites"); }}
-      aria-label={on ? "Remove from saved" : "Save"} aria-pressed={on}
+      onClick={(e) => { e.stopPropagation(); const now = toggleIn("saved", a.id); toast(now ? t("art.saved") : t("art.removed")); }}
+      aria-label={on ? t("art.unsave") : t("art.save")} aria-pressed={on}
       className={size === "sm" ? "icon-btn-glass icon-tip" : "icon-btn icon-tip"}
     >
       <Bookmark className={`h-4 w-4 ${on ? "fill-primary text-primary" : ""}`} />
@@ -70,16 +72,17 @@ export function ArtCard({ a, index = 0, onOpen }: { a: Artwork; index?: number; 
       <Link
         to="/art/$slug" params={{ slug: a.slug }}
         onClick={(e) => { if (onOpen && !e.metaKey && !e.ctrlKey) { e.preventDefault(); onOpen(); } }}
-        className="block h-full w-full focus-visible:outline-none" aria-label={`View ${a.title}`}
+        className="block h-full w-full focus-visible:outline-none" aria-label={t("art.view", { title: a.title })}
       >
+        {a.video ? <VideoTileMedia a={a} loaded={loaded} onLoad={() => setLoaded(true)} /> : (
         <motion.img
           layoutId={`art-${a.id}`} src={a.src} alt={`${a.title} — ${getSeries(a.series)?.name}`}
           width={a.width} height={a.height} loading="lazy" decoding="async" onLoad={() => setLoaded(true)}
           className={`h-full w-full object-cover transition-[transform,opacity,filter] duration-700 ${loaded ? "opacity-100 blur-0" : "opacity-0 blur-md"}`}
         />
+        )}
       </Link>
-      {a.type === "video" && (
-        <span className="badge-glass absolute left-3 top-3"><Play className="h-3 w-3 fill-current" /> {resolutionOf(a)}</span>
+/span>
       )}
       <figcaption className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-overlay/75 to-transparent p-4 opacity-100 transition-opacity duration-500 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
         <p className="font-script text-xl leading-tight text-primary-foreground transition-[transform,opacity] duration-500 md:translate-y-2 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 md:text-2xl">{a.title}</p>
@@ -112,18 +115,18 @@ export function MetaPanel({ a }: { a: Artwork }) {
       {s && <Link to="/series/$slug" params={{ slug: s.slug }} className="text-xs uppercase tracking-widest text-primary hover:underline">{s.name}</Link>}
       <h2 className="mt-2 text-4xl leading-tight">{a.title}</h2>
       <a href={a.credit_url} target="_blank" rel="noreferrer" className="font-script inline-flex items-center gap-1 text-2xl text-primary">
-        by {a.credit_name} <ExternalLink className="h-3.5 w-3.5" />
+        {t("art.by", { name: a.credit_name })} <ExternalLink className="h-3.5 w-3.5" />
       </a>
       <p className="mt-4 text-sm text-muted-foreground">{a.description}</p>
       <dl className="mt-6 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2.5 text-sm">
-        <dt className="text-muted-foreground">Characters</dt>
+        <dt className="text-muted-foreground">{t("art.characters")}</dt>
         <dd className="flex flex-wrap gap-x-2">
           {a.characters.map((c) => <Link key={c} to="/character/$slug" params={{ slug: c }} className="hover:text-primary">{getCharacter(c)?.name}</Link>)}
         </dd>
-        <dt className="text-muted-foreground">Resolution</dt><dd>{resolutionOf(a)} · {a.width}×{a.height}</dd>
-        <dt className="text-muted-foreground">Type</dt><dd className="capitalize">{a.type}</dd>
-        <dt className="text-muted-foreground">Published</dt><dd>{new Date(a.created_at).toLocaleDateString("en", { dateStyle: "medium" })}</dd>
-        <dt className="text-muted-foreground">Likes</dt><dd>{a.like_count.toLocaleString("en")}</dd>
+        <dt className="text-muted-foreground">{t("art.resolution")}</dt><dd>{resolutionOf(a)} · {a.width}×{a.height}</dd>
+        <dt className="text-muted-foreground">{t("art.type")}</dt><dd className="capitalize">{a.type}</dd>
+        <dt className="text-muted-foreground">{t("art.published")}</dt><dd>{new Date(a.created_at).toLocaleDateString("en", { dateStyle: "medium" })}</dd>
+        <dt className="text-muted-foreground">{t("art.likes")}</dt><dd>{a.like_count.toLocaleString("en")}</dd>
       </dl>
       <div className="mt-6 flex flex-wrap gap-2">
         {a.tags.map((t) => <Link key={t} to="/tag/$slug" params={{ slug: t }} className="chip">#{t}</Link>)}
@@ -131,8 +134,8 @@ export function MetaPanel({ a }: { a: Artwork }) {
       <div className="mt-8 flex flex-wrap items-center gap-2">
         <LikeButton a={a} size="lg" />
         <SaveButton a={a} size="lg" />
-        <button onClick={() => shareArtwork(a)} aria-label="Share" className="icon-btn icon-tip"><Share2 className="h-4 w-4" /></button>
-        <a href={a.src} download={`${a.slug}.jpg`} className="btn-primary btn-shine btn-arrow flex-1"><Download className="h-4 w-4" /> Download</a>
+        <button onClick={() => shareArtwork(a)} aria-label={t("art.share")} className="icon-btn icon-tip"><Share2 className="h-4 w-4" /></button>
+        <a href={a.src} download={`${a.slug}.jpg`} className="btn-primary btn-shine btn-arrow flex-1"><Download className="h-4 w-4" /> {t("art.download")}</a>
       </div>
     </div>
   );
@@ -140,6 +143,8 @@ export function MetaPanel({ a }: { a: Artwork }) {
 
 export function ZoomImage({ a, layout = true }: { a: Artwork; layout?: boolean }) {
   const [zoom, setZoom] = useState(false);
+  const tr = useT();
+  if (a.video) return <div className="flex h-full w-full items-center justify-center"><VideoPlayer media={a.video} title={a.title} /></div>;
   return (
     <div className="relative flex h-full w-full items-center justify-center overflow-hidden">
       <motion.img
@@ -150,7 +155,7 @@ export function ZoomImage({ a, layout = true }: { a: Artwork; layout?: boolean }
         className={`max-h-full max-w-full rounded-2xl object-contain ${zoom ? "cursor-grab" : "cursor-zoom-in"}`}
         onClick={(e) => e.stopPropagation()}
       />
-      <button onClick={(e) => { e.stopPropagation(); setZoom((z) => !z); }} aria-label={zoom ? "Zoom out" : "Zoom in"} className="icon-btn-glass icon-tip absolute bottom-3 right-3">
+      <button onClick={(e) => { e.stopPropagation(); setZoom((z) => !z); }} aria-label={zoom ? tr("art.zoomOut") : tr("art.zoomIn")} className="icon-btn-glass icon-tip absolute bottom-3 right-3">
         {zoom ? <ZoomOut className="h-4 w-4" /> : <ZoomIn className="h-4 w-4" />}
       </button>
     </div>
@@ -182,13 +187,13 @@ function Viewer({ items, index, setIndex }: { items: Artwork[]; index: number | 
             onDragEnd={(_, info) => { if (info.offset.x < -80) go(1); else if (info.offset.x > 80) go(-1); }}
           >
             <ZoomImage key={a.id} a={a} />
-            <button aria-label="Previous artwork" onClick={(e) => { e.stopPropagation(); go(-1); }} className="icon-btn-glass icon-tip absolute left-3 top-1/2 -translate-y-1/2"><ChevronLeft className="h-5 w-5" /></button>
-            <button aria-label="Next artwork" onClick={(e) => { e.stopPropagation(); go(1); }} className="icon-btn-glass icon-tip absolute right-3 top-1/2 -translate-y-1/2"><ChevronRight className="h-5 w-5" /></button>
+            <button aria-label={t("art.prev")} onClick={(e) => { e.stopPropagation(); go(-1); }} className="icon-btn-glass icon-tip absolute left-3 top-1/2 -translate-y-1/2"><ChevronLeft className="h-5 w-5" /></button>
+            <button aria-label={t("art.next")} onClick={(e) => { e.stopPropagation(); go(1); }} className="icon-btn-glass icon-tip absolute right-3 top-1/2 -translate-y-1/2"><ChevronRight className="h-5 w-5" /></button>
           </motion.div>
           <motion.aside initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ ease, duration: 0.5 }} className="relative w-full bg-card p-6 md:w-[26rem] md:overflow-y-auto md:p-8">
-            <button aria-label="Close viewer" autoFocus onClick={() => setIndex(null)} className="icon-btn icon-tip absolute right-4 top-4"><X className="h-4 w-4" /></button>
+            <button aria-label={t("art.close")} autoFocus onClick={() => setIndex(null)} className="icon-btn icon-tip absolute right-4 top-4"><X className="h-4 w-4" /></button>
             <MetaPanel a={a} />
-            <Link to="/art/$slug" params={{ slug: a.slug }} className="mt-6 inline-flex text-sm text-primary hover:underline">Open full page →</Link>
+            <Link to="/art/$slug" params={{ slug: a.slug }} className="mt-6 inline-flex text-sm text-primary hover:underline">{t("art.openFull")}</Link>
           </motion.aside>
         </motion.div>
       )}
