@@ -14,6 +14,9 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
 import { Petals } from "@/components/Petals";
+import { MotionConfig, motion } from "motion/react";
+import { useLocation } from "@tanstack/react-router";
+import { SmoothScroll, GlowCursor, Splash, IconTooltips } from "@/components/effects";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -120,11 +123,26 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <MotionConfig reducedMotion="user">
+      <SmoothScroll />
+      <Splash />
       <SiteHeader />
       <Petals />
-      <Outlet />
+      <PageTransition />
+      <GlowCursor />
+      <IconTooltips />
       <SiteFooter />
       <Toaster position="bottom-center" />
+      </MotionConfig>
     </QueryClientProvider>
+  );
+}
+
+function PageTransition() {
+  const { pathname } = useLocation();
+  return (
+    <motion.div key={pathname} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}>
+      <Outlet />
+    </motion.div>
   );
 }

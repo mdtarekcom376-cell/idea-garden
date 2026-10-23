@@ -132,7 +132,7 @@ export function MetaPanel({ a }: { a: Artwork }) {
         <LikeButton a={a} size="lg" />
         <SaveButton a={a} size="lg" />
         <button onClick={() => shareArtwork(a)} aria-label="Share" className="icon-btn icon-tip"><Share2 className="h-4 w-4" /></button>
-        <a href={a.src} download={`${a.slug}.jpg`} className="btn-primary btn-shine flex-1"><Download className="h-4 w-4" /> Download</a>
+        <a href={a.src} download={`${a.slug}.jpg`} className="btn-primary btn-shine btn-arrow flex-1"><Download className="h-4 w-4" /> Download</a>
       </div>
     </div>
   );

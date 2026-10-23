@@ -49,9 +49,9 @@ export function SiteHeader() {
       >
         <div className="container-page flex h-16 items-center justify-between gap-4">
           <Link to="/" className="flex shrink-0 items-center gap-2" aria-label="Artsstory home">
-            <motion.button type="button" aria-label="Sparkle" whileHover={{ rotate: 20, scale: 1.15 }} whileTap={{ scale: 0.8, rotate: 180 }} transition={spring}
+            <motion.span aria-hidden whileHover={{ rotate: 20, scale: 1.15 }} whileTap={{ scale: 0.8, rotate: 180 }} transition={spring}
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); const r = e.currentTarget.getBoundingClientRect(); petalBurst(r.left + r.width / 2, r.top + r.height / 2, 36); }}
-              className="grid place-items-center"><Sparkles className="h-5 w-5 text-primary" /></motion.button>
+              className="grid place-items-center"><Sparkles className="h-5 w-5 text-primary" /></motion.span>
             <span className="font-display text-lg tracking-[0.25em] uppercase sm:text-xl">Artsstory</span>
           </Link>
           <nav className="hidden items-center gap-6 lg:flex" aria-label="Main">
@@ -118,7 +118,7 @@ export function NewsletterForm() {
     >
       <label className="sr-only" htmlFor="nl-email">Email</label>
       <input id="nl-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" className="input-pill flex-1" />
-      <button className="btn-primary btn-shine">Subscribe</button>
+      <button className="btn-primary btn-shine btn-arrow">Subscribe</button>
     </form>
   );
 }
