@@ -24,7 +24,11 @@ export type Artwork = {
   width: number; height: number; aspect: number; dominant_color: string; blurhash: string;
   status: Status; featured: boolean; view_count: number; like_count: number; created_at: string;
   src: string;
+  /** Present when type === "video". Sources are listed so HLS can be added later without UI changes. */
+  video?: VideoMedia;
 };
+export type VideoSource = { label: "Auto" | "1080p" | "720p" | "480p"; src: string; type: "video/mp4" | "application/x-mpegURL" };
+export type VideoMedia = { duration: number; poster: string; preview: string; sources: VideoSource[]; hls?: string };
 
 const IMG = [
   { src: i1, w: 1024, h: 1280, c: "#f6c6d8" }, { src: i2, w: 1280, h: 832, c: "#3b1d5e" },
@@ -34,6 +38,21 @@ const IMG = [
   { src: i10, w: 832, h: 1216, c: "#6e8a55" }, { src: i11, w: 1024, h: 1024, c: "#5fc9d9" },
   { src: i12, w: 1024, h: 1280, c: "#e7b77f" },
 ];
+
+/* Placeholder public sample clips — swap for real MP4/HLS from storage later. */
+const SAMPLE = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/";
+const CLIPS = [
+  { file: "ForBiggerBlazes.mp4", duration: 15 }, { file: "ForBiggerEscapes.mp4", duration: 15 },
+  { file: "ForBiggerFun.mp4", duration: 60 }, { file: "ForBiggerJoyrides.mp4", duration: 15 },
+  { file: "ForBiggerMeltdowns.mp4", duration: 15 }, { file: "ForBiggerEscapes.mp4", duration: 15 },
+];
+const videoFor = (i: number, poster: string): VideoMedia => {
+  const c = CLIPS[i % CLIPS.length]!; const src = SAMPLE + c.file;
+  return { duration: c.duration, poster, preview: src, sources: [
+    { label: "Auto", src, type: "video/mp4" }, { label: "720p", src, type: "video/mp4" }, { label: "480p", src, type: "video/mp4" },
+  ] };
+};
+let videoCount = 0;
 
 /* ---------- Taxonomy ---------- */
 const S = (slug: string, name: string, description: string, img: number): Series => ({ id: slug, slug, name, description, cover: IMG[img]!.src });
@@ -123,6 +142,7 @@ export const artworks: Artwork[] = seeds.map(([title, s, chars, tg, img, type = 
     width: m.w, height: m.h, aspect: m.w / m.h, dominant_color: m.c, blurhash: "",
     status: "published", featured: i < 8, view_count: 1200 + ((i * 7919) % 9000),
     like_count: 80 + ((i * 3571) % 900), created_at: d.toISOString(), src: m.src,
+    ...(type === "video" ? { video: videoFor(videoCount++, m.src) } : {}),
   };
 });
 
@@ -139,6 +159,7 @@ export const collections: Collection[] = [
 export type Sort = "latest" | "popular" | "liked";
 export type Filters = { q?: string | undefined; type?: MediaType | "all" | undefined; series?: string | undefined; character?: string | undefined; tag?: string | undefined; orientation?: "portrait" | "landscape" | "square" | undefined; resolution?: "4K" | "HD" | undefined; sort?: Sort | undefined };
 
+export const formatDuration = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 export const resolutionOf = (a: Artwork) => (a.width >= 1024 ? "4K" : "HD");
 export const orientationOf = (a: Artwork) => (a.aspect > 1.1 ? "landscape" : a.aspect < 0.9 ? "portrait" : "square");
 
