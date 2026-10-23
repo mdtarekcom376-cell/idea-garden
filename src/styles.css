@@ -258,3 +258,13 @@
   &::-webkit-slider-thumb { appearance: none; height: 14px; width: 14px; border-radius: 999px; background: var(--primary-foreground); box-shadow: 0 0 0 3px var(--primary); }
   &::-moz-range-thumb { height: 14px; width: 14px; border: 0; border-radius: 999px; background: var(--primary-foreground); }
 }
+
+/* Mobile: compact card actions, roomier player controls */
+@utility card-actions {
+  @media (width < 768px) { & > * { height: 2.25rem; width: 2.25rem; } }
+}
+@media (width < 640px) {
+  .video-controls { padding: 1.75rem .5rem .4rem; }
+  .video-controls .video-btn { height: 2.5rem; width: 2.5rem; }
+  .video-big-play { height: 3.5rem; width: 3.5rem; top: 40% !important; }
+}

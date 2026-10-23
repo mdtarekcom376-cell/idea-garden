@@ -82,11 +82,11 @@ export function ArtCard({ a, index = 0, onOpen }: { a: Artwork; index?: number; 
         />
         )}
       </Link>
-      <figcaption className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-overlay/75 to-transparent p-4 opacity-100 transition-opacity duration-500 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
-        <p className="font-script text-xl leading-tight text-primary-foreground transition-[transform,opacity] duration-500 md:translate-y-2 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 md:text-2xl">{a.title}</p>
+      <figcaption className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-overlay/75 to-transparent p-3 md:p-4 opacity-100 transition-opacity duration-500 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
+        <p className="font-script line-clamp-2 text-lg leading-tight text-primary-foreground transition-[transform,opacity] duration-500 md:translate-y-2 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 md:text-2xl">{a.title}</p>
         <p className="text-xs text-primary-foreground/80">{getSeries(a.series)?.name}</p>
       </figcaption>
-      <div className="absolute right-2.5 top-2.5 flex flex-col gap-2 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
+      <div className="card-actions absolute right-2 top-2 flex flex-col gap-1.5 md:right-2.5 md:top-2.5 md:gap-2 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
         <LikeButton a={a} />
         <SaveButton a={a} />
       </div>
