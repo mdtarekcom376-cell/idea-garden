@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Offline — Artsstory</title><meta name="theme-color" content="#f06ba0"><link rel="icon" href="/icons/icon-192.png">
+<style>
+:root{color-scheme:light dark;--bg:#fdf6f9;--fg:#2a1f2e;--p:#f06ba0;--m:#7a6a80}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1420;--fg:#f8eef3;--m:#b9a8bf}}
+body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:system-ui,sans-serif;background:radial-gradient(60% 50% at 30% 20%,color-mix(in oklab,var(--p) 25%,transparent),transparent),var(--bg);color:var(--fg);text-align:center;padding:1.5rem}
+h1{font-family:Georgia,serif;font-size:clamp(2rem,6vw,3.5rem);margin:.5rem 0}p{color:var(--m);max-width:28rem;margin:0 auto 1.5rem}
+.s{font-size:3rem;color:var(--p);animation:f 4s ease-in-out infinite}@keyframes f{50%{transform:translateY(-8px) rotate(10deg)}}
+button{border:0;border-radius:999px;padding:.8rem 1.6rem;background:var(--p);color:#fff;font-size:1rem;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.s{animation:none}}
+</style></head><body><main><div class="s" aria-hidden="true">✦</div><h1>You're offline</h1>
+<p>The magic needs a connection. Pages you've visited may still open — reconnect to explore the full gallery.</p>
+<button onclick="location.reload()">Try again</button></main></body></html>

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { onThemeChange } from "@/lib/theme";
 
 type P = { x: number; y: number; s: number; vx: number; vy: number; r: number; vr: number; spark: boolean; life: number; tw: number };
 
@@ -9,9 +10,15 @@ export function Petals() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const c = ref.current!;
     const ctx = c.getContext("2d")!;
-    const css = getComputedStyle(document.documentElement);
-    const petal = css.getPropertyValue("--primary-soft").trim();
-    const sparkle = css.getPropertyValue("--primary").trim();
+    let petal = "", sparkle = "", dark = false;
+    const readColors = () => {
+      const css = getComputedStyle(document.documentElement);
+      dark = document.documentElement.classList.contains("dark");
+      petal = css.getPropertyValue(dark ? "--petal-dark" : "--primary-soft").trim();
+      sparkle = css.getPropertyValue("--primary").trim();
+    };
+    readColors();
+    const offTheme = onThemeChange(readColors);
     const mobile = window.innerWidth < 768;
     const lowEnd = (navigator.hardwareConcurrency ?? 8) <= 4;
     let w = 0, h = 0, raf = 0, wind = 0, running = true;
@@ -48,6 +55,7 @@ export function Petals() {
         ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r);
         ctx.globalAlpha = (p.life >= 0 ? Math.min(1, p.life / 40) : 1) * (p.spark ? 0.4 + Math.abs(Math.sin(p.tw)) * 0.6 : 0.85);
         ctx.fillStyle = p.spark ? sparkle : petal;
+        if (dark) { ctx.shadowColor = petal; ctx.shadowBlur = p.spark ? 8 : 12; }
         ctx.beginPath();
         if (p.spark) { const s = p.s; ctx.moveTo(0, -s * 2); ctx.lineTo(s * 0.5, -s * 0.5); ctx.lineTo(s * 2, 0); ctx.lineTo(s * 0.5, s * 0.5); ctx.lineTo(0, s * 2); ctx.lineTo(-s * 0.5, s * 0.5); ctx.lineTo(-s * 2, 0); ctx.lineTo(-s * 0.5, -s * 0.5); }
         else ctx.ellipse(0, 0, p.s, p.s * 0.55, 0, 0, Math.PI * 2);
@@ -62,7 +70,7 @@ export function Petals() {
     window.addEventListener("artsstory:burst", onBurst);
     document.addEventListener("visibilitychange", onVis);
     return () => {
-      running = false; cancelAnimationFrame(raf);
+      running = false; cancelAnimationFrame(raf); offTheme();
       window.removeEventListener("resize", resize); window.removeEventListener("pointermove", onMove);
       window.removeEventListener("artsstory:burst", onBurst); document.removeEventListener("visibilitychange", onVis);
     };

@@ -92,6 +92,8 @@
   --border: oklch(0.3 0.03 315);
   --input: oklch(0.3 0.03 315);
   --overlay: oklch(0.08 0.02 310);
+  --petal-dark: oklch(0.78 0.12 355);
+  --shadow-soft: 0 10px 40px oklch(0 0 0 / 0.35);
   --gradient-hero: linear-gradient(160deg, var(--sky) 0%, var(--primary-soft) 40%, var(--background) 100%);
 }
 
@@ -224,3 +226,35 @@
 .flip-a, .flip-b { transition: transform .45s var(--ease-out); }
 .group\/flip:hover .flip-a, a:hover > .group\/flip .flip-a { transform: translateY(-100%); }
 .group\/flip:hover .flip-b, a:hover > .group\/flip .flip-b { transform: translateY(-100%); }
+
+@utility text-gold { color: var(--gold); }
+@utility video-shell {
+  position: relative; width: 100%; max-height: 100%; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 1.25rem;
+  background: var(--overlay); color: var(--primary-foreground); outline: none;
+  &:focus-visible { box-shadow: 0 0 0 2px var(--ring); }
+  &:fullscreen { border-radius: 0; aspect-ratio: auto; }
+}
+@utility video-controls {
+  position: absolute; inset-inline: 0; bottom: 0; padding: 2.5rem 1rem .75rem;
+  background: linear-gradient(to top, color-mix(in oklab, var(--overlay) 85%, transparent), transparent);
+}
+@utility video-btn {
+  display: grid; place-items: center; height: 2.25rem; width: 2.25rem; border-radius: 999px; color: inherit;
+  transition: background-color .25s;
+  &:hover { background: color-mix(in oklab, var(--primary-foreground) 18%, transparent); }
+  &:focus-visible { outline: 2px solid var(--ring); }
+}
+@utility video-big-play {
+  display: grid; place-items: center; height: 4.5rem; width: 4.5rem; border-radius: 999px;
+  background: var(--primary); color: var(--primary-foreground); box-shadow: var(--glow);
+}
+@utility video-menu {
+  min-width: 7rem; padding: .35rem; border-radius: 1rem; background: var(--popover); color: var(--popover-foreground);
+  box-shadow: var(--shadow-soft); transform-origin: bottom right;
+}
+@utility video-range {
+  appearance: none; height: 4px; border-radius: 999px; cursor: pointer;
+  background: linear-gradient(to right, var(--primary) var(--p, 0%), color-mix(in oklab, var(--primary-foreground) 30%, transparent) var(--p, 0%));
+  &::-webkit-slider-thumb { appearance: none; height: 14px; width: 14px; border-radius: 999px; background: var(--primary-foreground); box-shadow: 0 0 0 3px var(--primary); }
+  &::-moz-range-thumb { height: 14px; width: 14px; border: 0; border-radius: 999px; background: var(--primary-foreground); }
+}
