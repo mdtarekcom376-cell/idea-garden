@@ -6,6 +6,9 @@ import { toast } from "sonner";
 import { type Artwork, getSeries, getCharacter, resolutionOf } from "@/data";
 import { toggleIn, useList } from "@/lib/library";
 import { ease } from "@/components/kit";
+import { spring } from "@/components/motion";
+import { petalBurst } from "@/components/effects";
+import { useMotionValue, useSpring, useTransform } from "motion/react";
 
 export async function shareArtwork(a: Artwork) {
   const url = `${window.location.origin}/art/${a.slug}`;
@@ -19,12 +22,12 @@ export function LikeButton({ a, size = "sm" }: { a: Artwork; size?: "sm" | "lg" 
   const on = likes.includes(a.id);
   return (
     <motion.button
-      whileTap={{ scale: 1.35 }} transition={{ type: "spring", stiffness: 500, damping: 15 }}
-      onClick={(e) => { e.stopPropagation(); toggleIn("likes", a.id); }}
+      whileTap={{ scale: 1.35 }} transition={spring}
+      onClick={(e) => { e.stopPropagation(); const now = toggleIn("likes", a.id); if (now) { const r = e.currentTarget.getBoundingClientRect(); petalBurst(r.left + r.width / 2, r.top + r.height / 2, 10); } }}
       aria-label={on ? "Unlike" : "Like"} aria-pressed={on}
-      className={size === "sm" ? "icon-btn-glass" : "icon-btn"}
+      className={size === "sm" ? "icon-btn-glass icon-tip" : "icon-btn icon-tip"}
     >
-      <Heart className={`h-4 w-4 ${on ? "fill-primary text-primary" : ""}`} />
+      <motion.span key={String(on)} initial={{ scale: on ? 0.4 : 1 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 500, damping: 12 }} className="grid place-items-center"><Heart className={`h-4 w-4 ${on ? "fill-primary text-primary" : ""}`} /></motion.span>
     </motion.button>
   );
 }
@@ -37,7 +40,7 @@ export function SaveButton({ a, size = "sm" }: { a: Artwork; size?: "sm" | "lg" 
       whileTap={{ scale: 1.25 }}
       onClick={(e) => { e.stopPropagation(); const now = toggleIn("saved", a.id); toast(now ? "Saved to favourites" : "Removed from favourites"); }}
       aria-label={on ? "Remove from saved" : "Save"} aria-pressed={on}
-      className={size === "sm" ? "icon-btn-glass" : "icon-btn"}
+      className={size === "sm" ? "icon-btn-glass icon-tip" : "icon-btn icon-tip"}
     >
       <Bookmark className={`h-4 w-4 ${on ? "fill-primary text-primary" : ""}`} />
     </motion.button>
@@ -46,12 +49,23 @@ export function SaveButton({ a, size = "sm" }: { a: Artwork; size?: "sm" | "lg" 
 
 export function ArtCard({ a, index = 0, onOpen }: { a: Artwork; index?: number; onOpen?: () => void }) {
   const [loaded, setLoaded] = useState(false);
+  const mx = useMotionValue(0.5), my = useMotionValue(0.5);
+  const rotateY = useSpring(useTransform(mx, [0, 1], [-5, 5]), spring);
+  const rotateX = useSpring(useTransform(my, [0, 1], [5, -5]), spring);
+  const tilt = (e: React.PointerEvent<HTMLElement>) => {
+    if (e.pointerType !== "mouse") return;
+    const r = e.currentTarget.getBoundingClientRect();
+    mx.set((e.clientX - r.left) / r.width); my.set((e.clientY - r.top) / r.height);
+  };
   return (
     <motion.figure
-      initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.6, ease, delay: (index % 4) * 0.07 }}
-      className="group relative mb-3 break-inside-avoid overflow-hidden rounded-3xl shadow-soft md:mb-5"
-      style={{ backgroundColor: a.dominant_color, aspectRatio: String(a.aspect) }}
+      initial={{ opacity: 0, scale: 0.92, y: 24 }} whileInView={{ opacity: 1, scale: 1, y: 0 }} viewport={{ once: true, margin: "-40px" }}
+      whileHover={{ scale: 1.04 }}
+      transition={{ duration: 0.6, ease, delay: (index % 4) * 0.09 }}
+      onPointerMove={tilt} onPointerLeave={() => { mx.set(0.5); my.set(0.5); }}
+      data-cursor="view"
+      className="card-glow group relative mb-3 break-inside-avoid overflow-hidden rounded-3xl shadow-soft md:mb-5"
+      style={{ backgroundColor: a.dominant_color, aspectRatio: String(a.aspect), rotateX, rotateY, transformPerspective: 900 }}
     >
       <Link
         to="/art/$slug" params={{ slug: a.slug }}
@@ -61,14 +75,14 @@ export function ArtCard({ a, index = 0, onOpen }: { a: Artwork; index?: number; 
         <motion.img
           layoutId={`art-${a.id}`} src={a.src} alt={`${a.title} — ${getSeries(a.series)?.name}`}
           width={a.width} height={a.height} loading="lazy" decoding="async" onLoad={() => setLoaded(true)}
-          className={`h-full w-full object-cover transition-[transform,opacity,filter] duration-700 group-hover:scale-[1.04] ${loaded ? "opacity-100 blur-0" : "opacity-0 blur-md"}`}
+          className={`h-full w-full object-cover transition-[transform,opacity,filter] duration-700 ${loaded ? "opacity-100 blur-0" : "opacity-0 blur-md"}`}
         />
       </Link>
       {a.type === "video" && (
         <span className="badge-glass absolute left-3 top-3"><Play className="h-3 w-3 fill-current" /> {resolutionOf(a)}</span>
       )}
       <figcaption className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-overlay/75 to-transparent p-4 opacity-100 transition-opacity duration-500 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
-        <p className="font-script text-xl leading-tight text-primary-foreground md:text-2xl">{a.title}</p>
+        <p className="font-script text-xl leading-tight text-primary-foreground transition-[transform,opacity] duration-500 md:translate-y-2 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 md:text-2xl">{a.title}</p>
         <p className="text-xs text-primary-foreground/80">{getSeries(a.series)?.name}</p>
       </figcaption>
       <div className="absolute right-2.5 top-2.5 flex flex-col gap-2 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
@@ -117,7 +131,7 @@ export function MetaPanel({ a }: { a: Artwork }) {
       <div className="mt-8 flex flex-wrap items-center gap-2">
         <LikeButton a={a} size="lg" />
         <SaveButton a={a} size="lg" />
-        <button onClick={() => shareArtwork(a)} aria-label="Share" className="icon-btn"><Share2 className="h-4 w-4" /></button>
+        <button onClick={() => shareArtwork(a)} aria-label="Share" className="icon-btn icon-tip"><Share2 className="h-4 w-4" /></button>
         <a href={a.src} download={`${a.slug}.jpg`} className="btn-primary btn-shine flex-1"><Download className="h-4 w-4" /> Download</a>
       </div>
     </div>
@@ -136,7 +150,7 @@ export function ZoomImage({ a, layout = true }: { a: Artwork; layout?: boolean }
         className={`max-h-full max-w-full rounded-2xl object-contain ${zoom ? "cursor-grab" : "cursor-zoom-in"}`}
         onClick={(e) => e.stopPropagation()}
       />
-      <button onClick={(e) => { e.stopPropagation(); setZoom((z) => !z); }} aria-label={zoom ? "Zoom out" : "Zoom in"} className="icon-btn-glass absolute bottom-3 right-3">
+      <button onClick={(e) => { e.stopPropagation(); setZoom((z) => !z); }} aria-label={zoom ? "Zoom out" : "Zoom in"} className="icon-btn-glass icon-tip absolute bottom-3 right-3">
         {zoom ? <ZoomOut className="h-4 w-4" /> : <ZoomIn className="h-4 w-4" />}
       </button>
     </div>
@@ -168,11 +182,11 @@ function Viewer({ items, index, setIndex }: { items: Artwork[]; index: number | 
             onDragEnd={(_, info) => { if (info.offset.x < -80) go(1); else if (info.offset.x > 80) go(-1); }}
           >
             <ZoomImage key={a.id} a={a} />
-            <button aria-label="Previous artwork" onClick={(e) => { e.stopPropagation(); go(-1); }} className="icon-btn-glass absolute left-3 top-1/2 -translate-y-1/2"><ChevronLeft className="h-5 w-5" /></button>
-            <button aria-label="Next artwork" onClick={(e) => { e.stopPropagation(); go(1); }} className="icon-btn-glass absolute right-3 top-1/2 -translate-y-1/2"><ChevronRight className="h-5 w-5" /></button>
+            <button aria-label="Previous artwork" onClick={(e) => { e.stopPropagation(); go(-1); }} className="icon-btn-glass icon-tip absolute left-3 top-1/2 -translate-y-1/2"><ChevronLeft className="h-5 w-5" /></button>
+            <button aria-label="Next artwork" onClick={(e) => { e.stopPropagation(); go(1); }} className="icon-btn-glass icon-tip absolute right-3 top-1/2 -translate-y-1/2"><ChevronRight className="h-5 w-5" /></button>
           </motion.div>
           <motion.aside initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ ease, duration: 0.5 }} className="relative w-full bg-card p-6 md:w-[26rem] md:overflow-y-auto md:p-8">
-            <button aria-label="Close viewer" autoFocus onClick={() => setIndex(null)} className="icon-btn absolute right-4 top-4"><X className="h-4 w-4" /></button>
+            <button aria-label="Close viewer" autoFocus onClick={() => setIndex(null)} className="icon-btn icon-tip absolute right-4 top-4"><X className="h-4 w-4" /></button>
             <MetaPanel a={a} />
             <Link to="/art/$slug" params={{ slug: a.slug }} className="mt-6 inline-flex text-sm text-primary hover:underline">Open full page →</Link>
           </motion.aside>

@@ -1,16 +1,10 @@
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { FadeUp, StaggerText, DrawUnderline } from "@/components/motion";
 
-export const ease = [0.22, 1, 0.36, 1] as const;
-
-export function FadeUp({ children, delay = 0, className }: { children: ReactNode; delay?: number; className?: string }) {
-  return (
-    <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-40px" }} transition={{ ease, duration: 0.6, delay }} className={className}>
-      {children}
-    </motion.div>
-  );
-}
+export const ease = [0.16, 1, 0.3, 1] as const;
+export { FadeUp } from "@/components/motion";
 
 export function SectionHeading({ eyebrow, title, accent, action, className }: { eyebrow?: string; title: string; accent?: string; action?: ReactNode; className?: string }) {
   return (
@@ -18,8 +12,9 @@ export function SectionHeading({ eyebrow, title, accent, action, className }: { 
       <FadeUp>
         {eyebrow && <p className="mb-2 text-xs uppercase tracking-[0.3em] text-primary">{eyebrow}</p>}
         <h2 className="text-[clamp(2rem,4.5vw,3.25rem)] leading-tight">
-          {title} {accent && <em className="text-primary">{accent}</em>}
+          <StaggerText text={title} /> {accent && <em className="text-primary"><StaggerText text={accent} delay={0.15} /></em>}
         </h2>
+        <DrawUnderline className="mt-1" />
       </FadeUp>
       {action}
     </div>
