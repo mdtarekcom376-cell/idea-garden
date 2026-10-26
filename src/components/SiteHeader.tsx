@@ -3,7 +3,23 @@ import { lockScroll, petalBurst } from "@/components/effects";
 import { Link, useLocation } from "@tanstack/react-router";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { Sparkles, Home, Compass, Search, Bookmark, Menu, Moon, Sun, X, Instagram, Twitter, Youtube } from "lucide-react";
+import {
+  Sparkles,
+  Home,
+  Compass,
+  Search,
+  Bookmark,
+  Menu,
+  Moon,
+  Sun,
+  X,
+  Instagram,
+  Twitter,
+  Youtube,
+  Layers,
+  Users,
+  Info,
+} from "lucide-react";
 import { toast } from "sonner";
 import { setTheme, useIsDark } from "@/lib/theme";
 import { useT, type MessageKey } from "@/lib/i18n";
@@ -11,14 +27,15 @@ import { formSchemas, submitForm } from "@/lib/forms";
 import { SOCIAL } from "@/lib/site";
 import { SearchPill } from "@/components/SearchPill";
 import { Honeypot } from "@/components/forms";
+import { cn } from "@/lib/utils";
 
 const nav = [
-  { to: "/", label: "nav.home" as MessageKey },
-  { to: "/gallery", label: "nav.gallery" as MessageKey },
-  { to: "/series", label: "nav.series" as MessageKey },
-  { to: "/characters", label: "nav.characters" as MessageKey },
-  { to: "/collections", label: "nav.collections" as MessageKey },
-  { to: "/about", label: "nav.about" as MessageKey },
+  { to: "/", label: "nav.home" as MessageKey, icon: Home },
+  { to: "/gallery", label: "nav.gallery" as MessageKey, icon: Compass },
+  { to: "/series", label: "nav.series" as MessageKey, icon: Layers },
+  { to: "/characters", label: "nav.characters" as MessageKey, icon: Users },
+  { to: "/collections", label: "nav.collections" as MessageKey, icon: Sparkles },
+  { to: "/about", label: "nav.about" as MessageKey, icon: Info },
 ] as const;
 
 const socials = [
@@ -31,26 +48,26 @@ function ThemeToggle() {
   const dark = useIsDark();
   const tr = useT();
   return (
-    <motion.button type="button" whileTap={{ scale: 0.85 }} onClick={() => setTheme(dark ? "light" : "dark")} aria-label={dark ? tr("theme.toLight") : tr("theme.toDark")} className="icon-btn icon-tip overflow-hidden">
+    <motion.button
+      type="button"
+      whileTap={{ scale: 0.85 }}
+      onClick={() => setTheme(dark ? "light" : "dark")}
+      aria-label={dark ? tr("theme.toLight") : tr("theme.toDark")}
+      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border/60 bg-card/60 dark:bg-neutral-800/60 text-foreground hover:bg-card hover:border-border transition-colors cursor-pointer select-none"
+    >
       <AnimatePresence mode="wait" initial={false}>
-        <motion.span key={dark ? "sun" : "moon"} className="grid place-items-center"
-          initial={{ rotate: -90, scale: 0, opacity: 0 }} animate={{ rotate: 0, scale: 1, opacity: 1 }} exit={{ rotate: 90, scale: 0, opacity: 0 }} transition={spring}>
-          {dark ? <Sun className="h-4 w-4 text-gold" /> : <Moon className="h-4 w-4" />}
+        <motion.span
+          key={dark ? "sun" : "moon"}
+          className="grid place-items-center"
+          initial={{ rotate: -90, scale: 0, opacity: 0 }}
+          animate={{ rotate: 0, scale: 1, opacity: 1 }}
+          exit={{ rotate: 90, scale: 0, opacity: 0 }}
+          transition={spring}
+        >
+          {dark ? <Sun className="h-3.5 w-3.5 text-amber-400" /> : <Moon className="h-3.5 w-3.5" />}
         </motion.span>
       </AnimatePresence>
     </motion.button>
-  );
-}
-
-function Logo({ burst = false }: { burst?: boolean }) {
-  const tr = useT();
-  return (
-    <Link to="/" className="flex shrink-0 items-center gap-2 rounded-full focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring" aria-label={tr("nav.homeLabel")}>
-      <motion.span aria-hidden whileHover={{ rotate: 20, scale: 1.15 }} whileTap={{ scale: 0.8, rotate: 180 }} transition={spring}
-        onClick={burst ? (e) => { e.preventDefault(); e.stopPropagation(); const r = e.currentTarget.getBoundingClientRect(); petalBurst(r.left + r.width / 2, r.top + r.height / 2, 36); } : undefined}
-        className="grid place-items-center"><Sparkles className="h-5 w-5 text-primary" /></motion.span>
-      <span className="font-display text-lg tracking-[0.25em] uppercase sm:text-xl">Artsstory</span>
-    </Link>
   );
 }
 
@@ -58,132 +75,93 @@ export function SiteHeader() {
   const tr = useT();
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [menu, setMenu] = useState(false);
-  const menuBtn = useRef<HTMLButtonElement>(null);
   useMotionValueEvent(scrollY, "change", (y) => {
     const prev = scrollY.getPrevious() ?? 0;
-    // Small deltas (momentum jitter) don't toggle the header.
     if (Math.abs(y - prev) > 4) setHidden(y > prev && y > 160);
-    setScrolled(y > 20);
   });
   const { pathname } = useLocation();
   useEffect(() => setHidden(false), [pathname]);
-  const closeMenu = () => { setMenu(false); menuBtn.current?.focus({ preventScroll: true }); };
 
   return (
     <>
       <a href="#content" className="sr-only z-[80] rounded-full bg-primary px-4 py-2 text-sm text-primary-foreground focus:not-sr-only focus:fixed focus:left-4 focus:top-3">Skip to content</a>
       <motion.header
-        initial={false} animate={{ y: hidden && !menu ? "-100%" : "0%" }} transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-        className={`fixed inset-x-0 top-0 z-50 border-b transition-[background-color,border-color,box-shadow] duration-300 ${scrolled ? "glass-strong shadow-[0_1px_0_0_var(--border)]" : "border-transparent"}`}
+        initial={false}
+        animate={{ y: hidden ? "-130%" : "0%" }}
+        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+        className="fixed inset-x-0 top-3 z-50 flex justify-center px-4 pointer-events-none"
       >
-        <div className="container-page flex h-16 items-center justify-between gap-4">
-          <Logo burst />
-          <nav className="hidden items-center gap-7 lg:flex" aria-label={tr("nav.main")}>
-            {nav.map((n) => (
-              <Link key={n.to} to={n.to} className="nav-link py-2" activeProps={{ className: "nav-link-active", "aria-current": "page" }} activeOptions={{ exact: n.to === "/", includeSearch: false }}><HoverFlip text={tr(n.label)} /></Link>
-            ))}
+        <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2 rounded-full border border-border/80 bg-background/90 dark:bg-card/90 p-1.5 sm:p-2 shadow-2xl backdrop-blur-2xl max-w-full overflow-x-auto no-scrollbar">
+          {/* Integrated Logo locked inside the navbar */}
+          <Link
+            to="/"
+            onClick={(e) => {
+              const r = e.currentTarget.getBoundingClientRect();
+              petalBurst(r.left + r.width / 2, r.top + r.height / 2, 28);
+            }}
+            className="flex items-center gap-2 rounded-full pl-3 pr-3.5 py-1.5 text-foreground hover:bg-muted/50 transition-colors shrink-0 select-none group"
+            aria-label={tr("nav.homeLabel")}
+          >
+            <motion.span
+              aria-hidden
+              whileHover={{ rotate: 20, scale: 1.15 }}
+              whileTap={{ scale: 0.8, rotate: 180 }}
+              transition={spring}
+              className="grid place-items-center"
+            >
+              <Sparkles className="h-4 w-4 text-primary" />
+            </motion.span>
+            <span className="font-display text-sm tracking-[0.22em] uppercase font-bold text-foreground">
+              Artsstory
+            </span>
+          </Link>
+
+          {/* Divider */}
+          <div className="h-5 w-px bg-border/80 shrink-0 mx-0.5" />
+
+          {/* Capsule Nav Items */}
+          <nav className="flex items-center gap-1 sm:gap-1.5 shrink-0" aria-label={tr("nav.main")}>
+            {nav.map((n) => {
+              const Icon = n.icon;
+              const isExact = n.to === "/";
+              const isActive = isExact
+                ? pathname === "/"
+                : pathname.startsWith(n.to);
+
+              return (
+                <Link
+                  key={n.to}
+                  to={n.to}
+                  activeOptions={{ exact: isExact, includeSearch: false }}
+                  className={cn(
+                    "relative flex items-center gap-1.5 sm:gap-2 rounded-full px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs font-medium tracking-wide transition-all select-none shrink-0",
+                    isActive
+                      ? "bg-primary text-primary-foreground shadow-sm font-semibold"
+                      : "bg-card/60 dark:bg-neutral-800/60 hover:bg-card text-foreground/80 hover:text-foreground border border-border/50 hover:border-border shadow-xs"
+                  )}
+                >
+                  {isActive && (
+                    <motion.span
+                      layoutId="activeNavCapsule"
+                      className="absolute inset-0 -z-10 rounded-full bg-primary shadow-sm"
+                      transition={{ type: "spring", stiffness: 380, damping: 28 }}
+                    />
+                  )}
+                  <Icon className={cn("h-3.5 w-3.5 shrink-0 transition-colors", isActive ? "text-primary-foreground" : "text-muted-foreground")} />
+                  <span>{tr(n.label)}</span>
+                </Link>
+              );
+            })}
           </nav>
-          <div className="flex items-center gap-2">
-            <Link to="/search" aria-label={tr("nav.search")} className="icon-btn icon-tip hidden md:grid"><Search className="h-4 w-4" /></Link>
-            <Link to="/saved" aria-label={tr("nav.saved")} className="icon-btn icon-tip hidden md:grid" activeProps={{ className: "!bg-primary-soft text-primary" }}><Bookmark className="h-4 w-4" /></Link>
-            <ThemeToggle />
-            <button ref={menuBtn} type="button" className="icon-btn icon-tip lg:hidden" aria-label={tr("nav.openMenu")} aria-expanded={menu} aria-controls="mobile-menu" onClick={() => setMenu(true)}><Menu className="h-4 w-4" /></button>
-          </div>
+
+          {/* Divider */}
+          <div className="h-5 w-px bg-border/80 shrink-0 mx-0.5" />
+
+          {/* Integrated Theme Toggle */}
+          <ThemeToggle />
         </div>
       </motion.header>
-      <MobileMenu open={menu} onClose={closeMenu} />
-      <MobileTabBar onMenu={() => setMenu(true)} menuOpen={menu} />
     </>
-  );
-}
-
-const extra = [
-  { to: "/saved", label: "nav.saved" as MessageKey },
-  { to: "/contact", label: "nav.contact" as MessageKey },
-  { to: "/dmca", label: "nav.dmca" as MessageKey },
-] as const;
-
-function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const tr = useT();
-  const { pathname } = useLocation();
-  const panel = useRef<HTMLDivElement>(null);
-  const close = useRef(onClose);
-  close.current = onClose;
-
-  // Close when the route changes (e.g. after a search submit).
-  const first = useRef(true);
-  useEffect(() => { if (first.current) { first.current = false; return; } close.current(); }, [pathname]);
-
-  useEffect(() => {
-    if (!open) return;
-    const unlock = lockScroll();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") { e.preventDefault(); close.current(); }
-      if (e.key === "Tab" && panel.current) {
-        // Keep focus inside the menu.
-        const els = panel.current.querySelectorAll<HTMLElement>("a[href], button:not([disabled]), input, [tabindex]:not([tabindex='-1'])");
-        const firstEl = els[0], last = els[els.length - 1];
-        if (!firstEl || !last) return;
-        if (e.shiftKey && document.activeElement === firstEl) { e.preventDefault(); last.focus(); }
-        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); firstEl.focus(); }
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => { unlock(); window.removeEventListener("keydown", onKey); };
-  }, [open]);
-
-  return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          ref={panel} id="mobile-menu" key="menu"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}
-          className="bg-hero fixed inset-0 z-[70] flex flex-col overflow-y-auto overscroll-contain px-4 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] md:px-8"
-          role="dialog" aria-modal="true" aria-label={tr("nav.menu")}
-        >
-          <div className="aurora pointer-events-none absolute inset-0" />
-          <div className="relative flex h-16 shrink-0 items-center justify-between">
-            <Logo />
-            <div className="flex items-center gap-2">
-              <ThemeToggle />
-              <button type="button" autoFocus className="icon-btn" aria-label={tr("nav.closeMenu")} onClick={onClose}><X className="h-4 w-4" /></button>
-            </div>
-          </div>
-          <SearchPill className="relative mt-4" />
-          <nav className="relative mt-6 flex flex-col" aria-label={tr("nav.menu")}>
-            {[...nav, ...extra].map((n, i) => (
-              <motion.div key={n.to} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 + i * 0.04, ease: [0.16, 1, 0.3, 1], duration: 0.5 }}>
-                <Link to={n.to} onClick={onClose} className="font-display block py-1.5 text-4xl transition-colors hover:text-primary" activeProps={{ className: "text-primary", "aria-current": "page" }} activeOptions={{ exact: n.to === "/", includeSearch: false }}>{tr(n.label)}</Link>
-              </motion.div>
-            ))}
-          </nav>
-          <div className="relative mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 pt-10 text-sm text-muted-foreground">
-            <Link to="/privacy" onClick={onClose} className="hover:text-primary">Privacy</Link>
-            <Link to="/terms" onClick={onClose} className="hover:text-primary">Terms</Link>
-            {socials.map(({ href, label, Icon }) => (
-              <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="icon-btn"><Icon className="h-4 w-4" /></a>
-            ))}
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
-
-function MobileTabBar({ onMenu, menuOpen }: { onMenu: () => void; menuOpen: boolean }) {
-  const tr = useT();
-  const cls = "flex min-h-14 min-w-14 flex-1 flex-col items-center justify-center gap-0.5 text-[11px] text-muted-foreground transition-colors";
-  const active = { className: "text-primary font-medium", "aria-current": "page" as const };
-  return (
-    <nav className="glass fixed inset-x-0 bottom-0 z-50 flex justify-around border-t pb-[env(safe-area-inset-bottom)] md:hidden" aria-label={tr("nav.mobile")}>
-      <Link to="/" className={cls} activeProps={active} activeOptions={{ exact: true, includeSearch: false }}><Home className="h-5 w-5" />{tr("nav.home")}</Link>
-      <Link to="/gallery" className={cls} activeProps={active} activeOptions={{ includeSearch: false }}><Compass className="h-5 w-5" />{tr("nav.explore")}</Link>
-      <Link to="/search" className={cls} activeProps={active} activeOptions={{ includeSearch: false }}><Search className="h-5 w-5" />{tr("nav.search")}</Link>
-      <Link to="/saved" className={cls} activeProps={active}><Bookmark className="h-5 w-5" />{tr("nav.saved")}</Link>
-      <button type="button" onClick={onMenu} aria-expanded={menuOpen} aria-controls="mobile-menu" className={cls}><Menu className="h-5 w-5" />{tr("nav.menu")}</button>
-    </nav>
   );
 }
 
