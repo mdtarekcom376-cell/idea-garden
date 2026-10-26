@@ -9,10 +9,13 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
-- Artwork data is mock content in src/lib/artworks.ts until a backend is added; UI reads only through that module so swapping to a real source stays local.
+- Artwork data is mock content in src/data/index.ts until a backend is added; UI reads only through that module so swapping to a real source stays local.
 
-- Animations go through src/components/motion (wrappers + easing tokens) and src/components/effects.tsx (global cursor, splash, tooltips, smooth scroll); keeps motion consistent and reduced-motion handled in one place.
+- Animations go through src/components/motion (wrappers + easing tokens) and src/components/effects.tsx (global cursor, tooltips, smooth scroll, `lockScroll` for overlays); keeps motion consistent and reduced-motion handled in one place.
+- The first server-rendered paint must be visible without JS: don't start above-the-fold content at opacity 0 (use `initial={false}` on first render).
+- Page head goes through `pageMeta()` in src/lib/site.ts (canonical, OG, Twitter); SITE_URL comes from VITE_SITE_URL.
+- Forms (contact, DMCA, newsletter) POST to /api/forms, which validates with src/lib/forms.ts and forwards to the FORM_WEBHOOK_URL env var.
 - UI strings go through src/lib/i18n.ts (`useT`/`t`); English dict is the source of truth and other locales fall back to it.
 - Theme state lives in src/lib/theme.ts (inline init script prevents flash; no stored choice = follow OS).
 - Video media is described by `Artwork.video.sources[]` (+ optional `hls`) so streaming can be added without UI changes.
-- Service worker registers only via src/lib/pwa.ts (refuses dev/preview/iframes, `?sw=off` kill switch); vite-plugin-pwa generates /sw.js.
+- Service worker registers only via src/lib/pwa.ts (refuses dev/preview/iframes, `?sw=off` kill switch); a workbox-build plugin in vite.config.ts writes /sw.js into the client build's real outDir (differs per deploy target).

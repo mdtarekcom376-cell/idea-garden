@@ -1,17 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/kit";
+import { pageMeta } from "@/lib/site";
 
 export const Route = createFileRoute("/terms")({
-  head: () => ({
-    meta: [
-      { title: "Terms of Use — Artsstory" },
-      { name: "description", content: "The terms for browsing, sharing and downloading artworks on Artsstory." },
-      { property: "og:title", content: "Terms of Use — Artsstory" },
-      { property: "og:description", content: "Terms for using Artsstory." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () => pageMeta({ title: "Terms of Use", description: "The terms for browsing, sharing and downloading artworks on Artsstory.", path: "/terms" }),
   component: () => (
     <main>
       <PageHero eyebrow="Legal" title="Terms of" accent="Use">Last updated October 2026.</PageHero>

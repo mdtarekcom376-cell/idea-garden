@@ -2,21 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { getArtworksByIds } from "@/data";
 import { useList } from "@/lib/library";
+import { pageMeta } from "@/lib/site";
 import { MasonryGrid } from "@/components/art";
 import { Chip, EmptyState, PageHero } from "@/components/kit";
 
 export const Route = createFileRoute("/saved")({
-  head: () => ({
-    meta: [
-      { title: "Saved — Artsstory" },
-      { name: "description", content: "Your saved and liked anime artworks on Artsstory." },
-      { property: "og:title", content: "Saved — Artsstory" },
-      { property: "og:description", content: "Your favourite anime art." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
+  head: () => pageMeta({ title: "Saved", description: "Your saved and liked anime artworks on Artsstory.", path: "/saved", noindex: true }),
   component: SavedPage,
 });
 

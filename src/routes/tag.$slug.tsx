@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getTag, queryArtworks, tags } from "@/data";
 import { MasonryGrid } from "@/components/art";
 import { EmptyState, PageHero } from "@/components/kit";
+import { pageMeta } from "@/lib/site";
 
 export const Route = createFileRoute("/tag/$slug")({
   loader: ({ params }) => {
@@ -9,18 +10,9 @@ export const Route = createFileRoute("/tag/$slug")({
     if (!t) throw notFound();
     return { slug: t.slug, name: t.name };
   },
-  head: ({ loaderData }) => ({
-    meta: loaderData
-      ? [
-          { title: `#${loaderData.name} anime art — Artsstory` },
-          { name: "description", content: `Curated anime artworks tagged #${loaderData.name}.` },
-          { property: "og:title", content: `#${loaderData.name} — Artsstory` },
-          { property: "og:description", content: `Anime art tagged #${loaderData.name}.` },
-          { property: "og:type", content: "website" },
-          { name: "twitter:card", content: "summary_large_image" },
-        ]
-      : [{ title: "Tag unavailable — Artsstory" }, { name: "robots", content: "noindex" }],
-  }),
+  head: ({ loaderData }) => loaderData
+    ? pageMeta({ title: `#${loaderData.name} anime art`, description: `Curated anime artworks tagged #${loaderData.name}.`, path: `/tag/${loaderData.slug}` })
+    : pageMeta({ title: "Tag unavailable", noindex: true }),
   component: TagPage,
   notFoundComponent: () => <main className="pt-28"><EmptyState title="Tag not found"><Link to="/gallery" className="text-primary">Back to the gallery</Link></EmptyState></main>,
   errorComponent: () => <main className="pt-28"><EmptyState title="This page didn't load" /></main>,

@@ -19,28 +19,29 @@ import { initLocale } from "@/lib/i18n";
 import { registerServiceWorker } from "@/lib/pwa";
 import { MotionConfig, motion } from "motion/react";
 import { useLocation } from "@tanstack/react-router";
-import { SmoothScroll, GlowCursor, Splash, IconTooltips } from "@/components/effects";
+import { SmoothScroll, GlowCursor, IconTooltips } from "@/components/effects";
 import { Toaster } from "@/components/ui/sonner";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
+import ogImage from "@/assets/art-1.jpg";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+    <main className="bg-hero relative flex min-h-[80vh] items-center justify-center overflow-hidden px-4 pt-24 pb-16">
+      <div className="aurora pointer-events-none absolute inset-0" />
+      <div className="relative max-w-md text-center">
+        <p className="font-script text-6xl text-primary">✿</p>
+        <h1 className="mt-2 text-[clamp(4rem,14vw,8rem)] leading-none">404</h1>
+        <h2 className="mt-4 text-3xl">This page drifted away</h2>
+        <p className="mt-3 text-muted-foreground">
+          The page you're looking for doesn't exist or has been moved. Try the gallery or search for something magical.
         </p>
-        <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Go home
-          </Link>
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <Link to="/" className="btn-primary btn-shine">Go home</Link>
+          <Link to="/gallery" className="btn-ghost">Browse the gallery</Link>
+          <Link to="/search" className="btn-ghost">Search</Link>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -86,23 +87,48 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { name: "theme-color", content: "#f06ba0", media: "(prefers-color-scheme: light)" },
       { name: "theme-color", content: "#221828", media: "(prefers-color-scheme: dark)" },
+      { name: "color-scheme", content: "light dark" },
+      { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
-      { title: "Artsstory" },
-      { name: "description", content: "Curated HD & 4K anime art gallery." },
+      { name: "apple-mobile-web-app-title", content: SITE_NAME },
+      { name: "application-name", content: SITE_NAME },
+      { name: "format-detection", content: "telephone=no" },
+      { title: `${SITE_NAME} — A world of magical anime moments` },
+      { name: "description", content: SITE_DESCRIPTION },
+      { property: "og:site_name", content: SITE_NAME },
+      { property: "og:locale", content: "en_US" },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: absoluteUrl(ogImage) },
+      { property: "og:image:alt", content: "Artsstory — curated anime art" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: absoluteUrl(ogImage) },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Inter:wght@400;500;600;700&display=swap" },
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.ico", sizes: "any" },
+      { rel: "icon", href: "/icons/icon-192.png", type: "image/png", sizes: "192x192" },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "apple-touch-icon", href: "/icons/icon-192.png" },
+      { rel: "sitemap", type: "application/xml", href: "/sitemap.xml" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: SITE_NAME,
+          url: SITE_URL,
+          description: SITE_DESCRIPTION,
+          potentialAction: { "@type": "SearchAction", target: `${SITE_URL}/search?q={search_term_string}`, "query-input": "required name=search_term_string" },
+        }),
+      },
     ],
   }),
   shellComponent: RootShell,
@@ -134,7 +160,6 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <MotionConfig reducedMotion="user">
       <SmoothScroll />
-      <Splash />
       <SiteHeader />
       <Petals />
       <PageTransition />
@@ -147,10 +172,15 @@ function RootComponent() {
   );
 }
 
+// The first (server-rendered) page must be visible before JS loads; only later navigations animate in.
+let hydrated = false;
+
 function PageTransition() {
   const { pathname } = useLocation();
+  const animateIn = hydrated;
+  useEffect(() => { hydrated = true; }, []);
   return (
-    <motion.div key={pathname} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}>
+    <motion.div id="content" tabIndex={-1} className="min-h-[70vh] outline-none" key={pathname} initial={animateIn ? { opacity: 0, y: 16 } : false} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}>
       <Outlet />
     </motion.div>
   );

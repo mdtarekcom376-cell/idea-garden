@@ -2,18 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { series } from "@/data";
 import { PageHero } from "@/components/kit";
 import { SeriesCard } from "@/components/rails";
+import { pageMeta } from "@/lib/site";
 
 export const Route = createFileRoute("/series/")({
-  head: () => ({
-    meta: [
-      { title: "Series — Artsstory" },
-      { name: "description", content: "Browse every anime world on Artsstory, from Petal Guardians to Dragon Peaks." },
-      { property: "og:title", content: "Series — Artsstory" },
-      { property: "og:description", content: "Every anime world in our gallery." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: () => pageMeta({ title: "Series", description: "Browse every anime world on Artsstory, from Petal Guardians to Dragon Peaks.", path: "/series" }),
   component: () => (
     <main>
       <PageHero eyebrow={`${series.length} worlds`} title="Every" accent="Series">Step into a world and see every piece we've gathered from it.</PageHero>

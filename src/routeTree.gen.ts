@@ -20,6 +20,7 @@ import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as ApiFormsRouteImport } from './routes/api.forms'
 import { Route as ArtSlugRouteImport } from './routes/art.$slug'
 import { Route as CharacterSlugRouteImport } from './routes/character.$slug'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
@@ -83,6 +84,11 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiFormsRoute = ApiFormsRouteImport.update({
+  id: '/api/forms',
+  path: '/api/forms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ArtSlugRoute = ArtSlugRouteImport.update({
   id: '/art/$slug',
   path: '/art/$slug',
@@ -131,6 +137,7 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/api/forms': typeof ApiFormsRoute
   '/art/$slug': typeof ArtSlugRoute
   '/character/$slug': typeof CharacterSlugRoute
   '/collections/$slug': typeof CollectionsSlugRoute
@@ -151,6 +158,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/api/forms': typeof ApiFormsRoute
   '/art/$slug': typeof ArtSlugRoute
   '/character/$slug': typeof CharacterSlugRoute
   '/collections/$slug': typeof CollectionsSlugRoute
@@ -172,6 +180,7 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/api/forms': typeof ApiFormsRoute
   '/art/$slug': typeof ArtSlugRoute
   '/character/$slug': typeof CharacterSlugRoute
   '/collections/$slug': typeof CollectionsSlugRoute
@@ -194,6 +203,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/sitemap.xml'
     | '/terms'
+    | '/api/forms'
     | '/art/$slug'
     | '/character/$slug'
     | '/collections/$slug'
@@ -214,6 +224,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/sitemap.xml'
     | '/terms'
+    | '/api/forms'
     | '/art/$slug'
     | '/character/$slug'
     | '/collections/$slug'
@@ -234,6 +245,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/sitemap.xml'
     | '/terms'
+    | '/api/forms'
     | '/art/$slug'
     | '/character/$slug'
     | '/collections/$slug'
@@ -255,6 +267,7 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  ApiFormsRoute: typeof ApiFormsRoute
   ArtSlugRoute: typeof ArtSlugRoute
   CharacterSlugRoute: typeof CharacterSlugRoute
   CollectionsSlugRoute: typeof CollectionsSlugRoute
@@ -343,6 +356,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/forms': {
+      id: '/api/forms'
+      path: '/api/forms'
+      fullPath: '/api/forms'
+      preLoaderRoute: typeof ApiFormsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/art/$slug': {
       id: '/art/$slug'
       path: '/art/$slug'
@@ -407,6 +427,7 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  ApiFormsRoute: ApiFormsRoute,
   ArtSlugRoute: ArtSlugRoute,
   CharacterSlugRoute: CharacterSlugRoute,
   CollectionsSlugRoute: CollectionsSlugRoute,

@@ -4,25 +4,17 @@ import { useEffect } from "react";
 import { artworks, getArtwork, getRelated } from "@/data";
 import { MasonryGrid, MetaPanel, ZoomImage } from "@/components/art";
 import { SectionHeading, EmptyState } from "@/components/kit";
+import { absoluteUrl, pageMeta } from "@/lib/site";
 
 export const Route = createFileRoute("/art/$slug")({
   loader: ({ params }) => {
     const a = getArtwork(params.slug);
     if (!a) throw notFound();
-    return { slug: a.slug, title: a.title, description: a.description };
+    return { slug: a.slug, title: a.title, description: a.description, image: a.video?.poster ?? a.src };
   },
-  head: ({ loaderData }) => ({
-    meta: loaderData
-      ? [
-          { title: `${loaderData.title} — Artsstory` },
-          { name: "description", content: loaderData.description },
-          { property: "og:title", content: `${loaderData.title} — Artsstory` },
-          { property: "og:description", content: loaderData.description },
-          { property: "og:type", content: "article" },
-          { name: "twitter:card", content: "summary_large_image" },
-        ]
-      : [{ title: "Artwork unavailable — Artsstory" }, { name: "robots", content: "noindex" }],
-  }),
+  head: ({ loaderData }) => loaderData
+    ? pageMeta({ title: loaderData.title, description: loaderData.description, path: `/art/${loaderData.slug}`, image: loaderData.image, type: "article" })
+    : pageMeta({ title: "Artwork unavailable", noindex: true }),
   component: ArtPage,
   notFoundComponent: () => <main className="pt-28"><EmptyState title="Artwork not found"><Link to="/gallery" className="text-primary">Back to the gallery</Link></EmptyState></main>,
   errorComponent: () => <main className="pt-28"><EmptyState title="This artwork didn't load" /></main>,
@@ -37,7 +29,8 @@ function ArtPage() {
   const router = useRouter();
   useEffect(() => {
     const k = (e: KeyboardEvent) => {
-      if ((e.target as HTMLElement).tagName === "INPUT") return;
+      const el = e.target as HTMLElement;
+      if (["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName) || el.closest("[role=dialog], [role=region]") || e.metaKey || e.ctrlKey || e.altKey) return;
       if (e.key === "ArrowRight") router.navigate({ to: "/art/$slug", params: { slug: next.slug } });
       if (e.key === "ArrowLeft") router.navigate({ to: "/art/$slug", params: { slug: prev.slug } });
     };
@@ -59,7 +52,7 @@ function ArtPage() {
         <SectionHeading title="More like" accent="this" />
         <MasonryGrid key={a.id} items={getRelated(a)} />
       </section>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@type": a.type === "video" ? "VideoObject" : "ImageObject", name: a.title, description: a.description, creator: { "@type": "Person", name: a.credit_name }, width: a.width, height: a.height, uploadDate: a.created_at }) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@type": a.type === "video" ? "VideoObject" : "ImageObject", name: a.title, description: a.description, url: absoluteUrl(`/art/${a.slug}`), ...(a.video ? { thumbnailUrl: absoluteUrl(a.video.poster), contentUrl: a.video.sources[0]!.src, duration: `PT${a.video.duration}S` } : { contentUrl: absoluteUrl(a.src) }), creator: { "@type": "Person", name: a.credit_name, url: a.credit_url }, creditText: a.credit_name, width: a.width, height: a.height, uploadDate: a.created_at }) }} />
     </main>
   );
 }

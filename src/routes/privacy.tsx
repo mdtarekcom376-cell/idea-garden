@@ -1,17 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/kit";
+import { pageMeta } from "@/lib/site";
 
 export const Route = createFileRoute("/privacy")({
-  head: () => ({
-    meta: [
-      { title: "Privacy Policy — Artsstory" },
-      { name: "description", content: "How Artsstory handles your data: what we store, why, and your choices." },
-      { property: "og:title", content: "Privacy Policy — Artsstory" },
-      { property: "og:description", content: "How Artsstory handles your data." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () => pageMeta({ title: "Privacy Policy", description: "How Artsstory handles your data: what we store, why, and your choices.", path: "/privacy" }),
   component: () => (
     <main>
       <PageHero eyebrow="Legal" title="Privacy" accent="Policy">Last updated October 2026.</PageHero>

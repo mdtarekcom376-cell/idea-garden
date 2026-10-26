@@ -2,18 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { characters } from "@/data";
 import { PageHero } from "@/components/kit";
 import { CharacterCard } from "@/components/rails";
+import { pageMeta } from "@/lib/site";
 
 export const Route = createFileRoute("/characters")({
-  head: () => ({
-    meta: [
-      { title: "Characters — Artsstory" },
-      { name: "description", content: "Meet every character featured across the Artsstory anime gallery." },
-      { property: "og:title", content: "Characters — Artsstory" },
-      { property: "og:description", content: "Every character in our gallery." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: () => pageMeta({ title: "Characters", description: "Meet every character featured across the Artsstory anime gallery.", path: "/characters" }),
   component: () => (
     <main>
       <PageHero eyebrow={`${characters.length} characters`} title="The" accent="Characters">Heroes, spirits and quiet dreamers from every world.</PageHero>

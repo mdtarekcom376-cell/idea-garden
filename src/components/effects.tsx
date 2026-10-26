@@ -1,7 +1,7 @@
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { Sparkles } from "lucide-react";
-import { easeExpo, spring } from "@/components/motion";
+import { useLocation } from "@tanstack/react-router";
+import { spring } from "@/components/motion";
 
 /** Fire a petal burst at viewport coords (handled by the Petals canvas). */
 export function petalBurst(x: number, y: number, count = 24) {
@@ -11,19 +11,44 @@ export function petalBurst(x: number, y: number, count = 24) {
 const finePointer = () => window.matchMedia("(pointer: fine)").matches;
 const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+type LenisLike = { raf: (t: number) => void; destroy: () => void; stop: () => void; start: () => void; scrollTo: (t: number, o?: { immediate?: boolean }) => void };
+let lenisInstance: LenisLike | null = null;
+let locks = 0;
+
+/** Lock page scroll while an overlay (menu, viewer) is open. Ref-counted; returns the unlock fn. */
+export function lockScroll() {
+  if (locks++ === 0) {
+    document.documentElement.style.overflow = "hidden";
+    lenisInstance?.stop();
+  }
+  let done = false;
+  return () => {
+    if (done) return;
+    done = true;
+    if (--locks === 0) {
+      document.documentElement.style.overflow = "";
+      lenisInstance?.start();
+    }
+  };
+}
+
 export function SmoothScroll() {
+  const { pathname } = useLocation();
   useEffect(() => {
     if (reduced() || !finePointer()) return;
     let raf = 0, alive = true;
-    let lenis: { raf: (t: number) => void; destroy: () => void } | null = null;
     import("lenis").then(({ default: Lenis }) => {
       if (!alive) return;
-      lenis = new Lenis({ lerp: 0.12 });
-      const loop = (t: number) => { lenis!.raf(t); raf = requestAnimationFrame(loop); };
+      // Overlays and scrollable panels keep native wheel scrolling.
+      lenisInstance = new Lenis({ lerp: 0.12, prevent: (node: HTMLElement) => !!node.closest?.("[role=dialog], [role=listbox], [data-lenis-prevent]") }) as unknown as LenisLike;
+      if (locks > 0) lenisInstance.stop();
+      const loop = (t: number) => { lenisInstance?.raf(t); raf = requestAnimationFrame(loop); };
       raf = requestAnimationFrame(loop);
     });
-    return () => { alive = false; cancelAnimationFrame(raf); lenis?.destroy(); };
+    return () => { alive = false; cancelAnimationFrame(raf); lenisInstance?.destroy(); lenisInstance = null; };
   }, []);
+  // Keep Lenis in sync with the router's scroll reset on navigation.
+  useEffect(() => { lenisInstance?.scrollTo(window.scrollY, { immediate: true }); }, [pathname]);
   return null;
 }
 
@@ -57,31 +82,6 @@ export function GlowCursor() {
         <motion.span className="text-xs font-medium tracking-widest uppercase" animate={{ opacity: view ? 1 : 0 }}>View</motion.span>
       </motion.div>
     </div>
-  );
-}
-
-/** Logo splash, once per browser session. */
-export function Splash() {
-  const [show, setShow] = useState(false);
-  const reduce = useReducedMotion();
-  useEffect(() => {
-    if (sessionStorage.getItem("artsstory:splash")) return;
-    sessionStorage.setItem("artsstory:splash", "1");
-    setShow(true);
-    const t = setTimeout(() => setShow(false), reduce ? 500 : 1300);
-    return () => clearTimeout(t);
-  }, [reduce]);
-  return (
-    <AnimatePresence>
-      {show && (
-        <motion.div aria-hidden className="bg-hero pointer-events-none fixed inset-0 z-[100] grid place-items-center" initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ ease: easeExpo, duration: 0.6 }}>
-          <motion.div className="flex items-center gap-3" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ ease: easeExpo, duration: 0.6 }}>
-            <motion.span animate={{ rotate: [0, 180], scale: [0.6, 1.2, 1] }} transition={{ duration: 0.9, ease: easeExpo }}><Sparkles className="h-8 w-8 text-primary" /></motion.span>
-            <span className="font-display text-2xl uppercase tracking-[0.3em]">Artsstory</span>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
   );
 }
 

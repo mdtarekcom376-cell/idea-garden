@@ -3,25 +3,17 @@ import { charactersOf, getSeries, queryArtworks } from "@/data";
 import { MasonryGrid } from "@/components/art";
 import { EmptyState, PageHero, SectionHeading } from "@/components/kit";
 import { CharacterCard, Rail } from "@/components/rails";
+import { pageMeta } from "@/lib/site";
 
 export const Route = createFileRoute("/series/$slug")({
   loader: ({ params }) => {
     const s = getSeries(params.slug);
     if (!s) throw notFound();
-    return { slug: s.slug, name: s.name, description: s.description };
+    return { slug: s.slug, name: s.name, description: s.description, image: s.cover };
   },
-  head: ({ loaderData }) => ({
-    meta: loaderData
-      ? [
-          { title: `${loaderData.name} — Series — Artsstory` },
-          { name: "description", content: loaderData.description },
-          { property: "og:title", content: `${loaderData.name} — Artsstory` },
-          { property: "og:description", content: loaderData.description },
-          { property: "og:type", content: "website" },
-          { name: "twitter:card", content: "summary_large_image" },
-        ]
-      : [{ title: "Series unavailable — Artsstory" }, { name: "robots", content: "noindex" }],
-  }),
+  head: ({ loaderData }) => loaderData
+    ? pageMeta({ title: `${loaderData.name} — Series`, description: loaderData.description, path: `/series/${loaderData.slug}`, image: loaderData.image })
+    : pageMeta({ title: "Series unavailable", noindex: true }),
   component: SeriesPage,
   notFoundComponent: () => <main className="pt-28"><EmptyState title="Series not found"><Link to="/series" className="text-primary">See all series</Link></EmptyState></main>,
   errorComponent: () => <main className="pt-28"><EmptyState title="This page didn't load" /></main>,

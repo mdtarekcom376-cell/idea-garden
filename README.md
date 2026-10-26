@@ -24,3 +24,17 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Deploying to Vercel
+
+Vercel builds with `vite build`; Nitro detects Vercel and writes `.vercel/output` (SSR function + static files, including `/sw.js`).
+
+Set these environment variables in the Vercel project (see `.env.example`):
+
+| Variable | Purpose |
+| --- | --- |
+| `VITE_SITE_URL` | Canonical domain for SEO tags and the sitemap (defaults to `https://www.artsstory.tech`) |
+| `FORM_WEBHOOK_URL` | Where contact, DMCA and newsletter submissions are delivered (Slack/Discord/Zapier/Make webhook). Required for forms to work in production. |
+| `VITE_SOCIAL_INSTAGRAM`, `VITE_SOCIAL_TWITTER`, `VITE_SOCIAL_YOUTUBE` | Optional social profile links; icons are hidden when empty |
+
+Checks before shipping: `npx tsc --noEmit`, `npm test`, `npm run build`.

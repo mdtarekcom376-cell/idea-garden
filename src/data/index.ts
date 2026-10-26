@@ -2,6 +2,7 @@ import i1 from "@/assets/art-1.jpg";
 import i2 from "@/assets/art-2.jpg";
 import i3 from "@/assets/art-3.jpg";
 import i4 from "@/assets/art-4.jpg";
+import i5 from "@/assets/art-5.jpg";
 import i6 from "@/assets/art-6.jpg";
 import i7 from "@/assets/art-7.jpg";
 import i8 from "@/assets/art-8.jpg";
@@ -9,6 +10,24 @@ import i9 from "@/assets/art-9.jpg";
 import i10 from "@/assets/art-10.jpg";
 import i11 from "@/assets/art-11.jpg";
 import i12 from "@/assets/art-12.jpg";
+import i13 from "@/assets/art-13.jpg";
+import i14 from "@/assets/art-14.jpg";
+import i15 from "@/assets/art-15.jpg";
+import i16 from "@/assets/art-16.jpg";
+import i17 from "@/assets/art-17.jpg";
+import i18 from "@/assets/art-18.jpg";
+import i19 from "@/assets/art-19.jpg";
+import i20 from "@/assets/art-20.jpg";
+import i21 from "@/assets/art-21.jpg";
+import i22 from "@/assets/art-22.jpg";
+import i23 from "@/assets/art-23.jpg";
+import i24 from "@/assets/art-24.jpg";
+import i25 from "@/assets/art-25.jpg";
+import i26 from "@/assets/art-26.jpg";
+import i27 from "@/assets/art-27.jpg";
+import i28 from "@/assets/art-28.jpg";
+import i29 from "@/assets/art-29.jpg";
+import i30 from "@/assets/art-30.jpg";
 
 /* ---------- Types (mirror the planned DB schema) ---------- */
 export type MediaType = "image" | "video";
@@ -31,12 +50,36 @@ export type VideoSource = { label: "Auto" | "1080p" | "720p" | "480p"; src: stri
 export type VideoMedia = { duration: number; poster: string; preview: string; sources: VideoSource[]; hls?: string };
 
 const IMG = [
-  { src: i1, w: 1024, h: 1280, c: "#f6c6d8" }, { src: i2, w: 1280, h: 832, c: "#3b1d5e" },
-  { src: i3, w: 832, h: 1280, c: "#f3c79a" }, { src: i4, w: 1024, h: 1024, c: "#6f6ac2" },
-  { src: i6, w: 1280, h: 768, c: "#2a2f7a" }, { src: i7, w: 1024, h: 1280, c: "#6b4a3a" },
-  { src: i8, w: 1024, h: 1024, c: "#b8402c" }, { src: i9, w: 1280, h: 832, c: "#f1d3e2" },
-  { src: i10, w: 832, h: 1216, c: "#6e8a55" }, { src: i11, w: 1024, h: 1024, c: "#5fc9d9" },
+  { src: i1, w: 1024, h: 1280, c: "#f6c6d8" },
+  { src: i2, w: 1280, h: 832, c: "#3b1d5e" },
+  { src: i3, w: 832, h: 1280, c: "#f3c79a" },
+  { src: i4, w: 1024, h: 1024, c: "#6f6ac2" },
+  { src: i5, w: 2560, h: 1441, c: "#483d8b" },
+  { src: i6, w: 1280, h: 768, c: "#2a2f7a" },
+  { src: i7, w: 1024, h: 1280, c: "#6b4a3a" },
+  { src: i8, w: 1024, h: 1024, c: "#b8402c" },
+  { src: i9, w: 1280, h: 832, c: "#f1d3e2" },
+  { src: i10, w: 832, h: 1216, c: "#6e8a55" },
+  { src: i11, w: 1024, h: 1024, c: "#5fc9d9" },
   { src: i12, w: 1024, h: 1280, c: "#e7b77f" },
+  { src: i13, w: 896, h: 1200, c: "#e892a2" },
+  { src: i14, w: 3840, h: 2160, c: "#3a4f66" },
+  { src: i15, w: 1920, h: 1080, c: "#d4b8e8" },
+  { src: i16, w: 1920, h: 1080, c: "#1b2559" },
+  { src: i17, w: 1920, h: 1080, c: "#5a3a7c" },
+  { src: i18, w: 1920, h: 1200, c: "#a66a38" },
+  { src: i19, w: 1920, h: 1080, c: "#2d4436" },
+  { src: i20, w: 1920, h: 1080, c: "#2e5a36" },
+  { src: i21, w: 2560, h: 1440, c: "#2a52be" },
+  { src: i22, w: 1920, h: 1080, c: "#d4af37" },
+  { src: i23, w: 1920, h: 1080, c: "#f48fb1" },
+  { src: i24, w: 1920, h: 1080, c: "#27408b" },
+  { src: i25, w: 1920, h: 1200, c: "#ff6f59" },
+  { src: i26, w: 1920, h: 1200, c: "#392b58" },
+  { src: i27, w: 1920, h: 1080, c: "#104e8b" },
+  { src: i28, w: 1920, h: 1200, c: "#483d8b" },
+  { src: i29, w: 1920, h: 1080, c: "#8b1a1a" },
+  { src: i30, w: 1920, h: 1080, c: "#4a5d23" },
 ];
 
 /* Placeholder public sample clips — swap for real MP4/HLS from storage later. */
@@ -108,25 +151,25 @@ const seeds: Seed[] = [
   ["Firefly Grove", "skybound", ["sylva"], ["fantasy", "spirits", "magic"], 8],
   ["Crystal Depths", "starlight-express", ["marin"], ["water", "fantasy"], 9],
   ["Airship Harbor", "skybound", ["captain-aoi"], ["sky", "sunset", "city"], 10],
-  ["Blossom Oath", "petal-guardians", ["sakuya", "hana"], ["sakura", "fantasy"], 0],
-  ["Midnight Courier", "kaze-city", ["kaito"], ["neon", "city"], 1],
-  ["Cloud Sailor", "skybound", ["kiko", "captain-aoi"], ["sky", "scenery"], 2, "video"],
-  ["Silver Tail", "spirit-blade", ["kohaku"], ["spirits", "moon"], 3],
-  ["Star Collector", "starlight-express", ["hoshi"], ["night", "sky"], 4],
-  ["Library Lights", "lavender-academy", ["professor-sage"], ["cozy", "magic"], 5, "video"],
-  ["Lantern Path", "shrine-tales", ["tsubaki"], ["autumn", "spirits"], 6],
-  ["Temple in the Mist", "dragon-peaks", ["mei"], ["dragon", "scenery"], 7],
-  ["Wishing Woods", "skybound", ["sylva"], ["fantasy", "magic"], 8],
-  ["Koi Palace", "starlight-express", ["marin"], ["water", "magic"], 9, "video"],
-  ["Golden Departure", "skybound", ["captain-aoi"], ["sunset", "sky"], 10],
-  ["Petal Storm", "petal-guardians", ["momo"], ["sakura", "magic"], 0],
-  ["Rainy Crossing", "kaze-city", ["rin", "kaito"], ["night", "neon", "water"], 1],
-  ["Sunset Watch", "skybound", ["kiko"], ["sunset", "scenery"], 2],
-  ["Blade of Moonlight", "spirit-blade", ["ren"], ["moon", "night"], 3, "video"],
-  ["Mirror Lake", "starlight-express", ["yume", "hoshi"], ["water", "night"], 4],
-  ["Midnight Study", "lavender-academy", ["lili"], ["cozy", "night"], 5],
-  ["Red Gate Dusk", "shrine-tales", ["akane", "tsubaki"], ["autumn", "sunset"], 6],
-  ["Wings over Peaks", "dragon-peaks", ["ryu", "mei"], ["dragon", "sky"], 7],
+  ["Blossom Oath", "petal-guardians", ["sakuya", "hana"], ["sakura", "fantasy"], 11],
+  ["Midnight Courier", "kaze-city", ["kaito"], ["neon", "city"], 12],
+  ["Cloud Sailor", "skybound", ["kiko", "captain-aoi"], ["sky", "scenery"], 13, "video"],
+  ["Silver Tail", "spirit-blade", ["kohaku"], ["spirits", "moon"], 14],
+  ["Star Collector", "starlight-express", ["hoshi"], ["night", "sky"], 15],
+  ["Library Lights", "lavender-academy", ["professor-sage"], ["cozy", "magic"], 16, "video"],
+  ["Lantern Path", "shrine-tales", ["tsubaki"], ["autumn", "spirits"], 17],
+  ["Temple in the Mist", "dragon-peaks", ["mei"], ["dragon", "scenery"], 18],
+  ["Wishing Woods", "skybound", ["sylva"], ["fantasy", "magic"], 19],
+  ["Koi Palace", "starlight-express", ["marin"], ["water", "magic"], 20, "video"],
+  ["Golden Departure", "skybound", ["captain-aoi"], ["sunset", "sky"], 21],
+  ["Petal Storm", "petal-guardians", ["momo"], ["sakura", "magic"], 22],
+  ["Rainy Crossing", "kaze-city", ["rin", "kaito"], ["night", "neon", "water"], 23],
+  ["Sunset Watch", "skybound", ["kiko"], ["sunset", "scenery"], 24],
+  ["Blade of Moonlight", "spirit-blade", ["ren"], ["moon", "night"], 25, "video"],
+  ["Mirror Lake", "starlight-express", ["yume", "hoshi"], ["water", "night"], 26],
+  ["Midnight Study", "lavender-academy", ["lili"], ["cozy", "night"], 27],
+  ["Red Gate Dusk", "shrine-tales", ["akane", "tsubaki"], ["autumn", "sunset"], 28],
+  ["Wings over Peaks", "dragon-peaks", ["ryu", "mei"], ["dragon", "sky"], 29],
 ];
 const artists = [["Mirei", "https://example.com/mirei"], ["Sora K.", "https://example.com/sora"], ["Aoi", "https://example.com/aoi"]] as const;
 const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");

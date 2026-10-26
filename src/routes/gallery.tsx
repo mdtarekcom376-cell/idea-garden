@@ -4,6 +4,7 @@ import { getArtworks, series, characters, tags, type Filters } from "@/data";
 import { MasonryGrid } from "@/components/art";
 import { Chip, EmptyState, PageHero, SkeletonTile } from "@/components/kit";
 import { SearchPill } from "@/components/SearchPill";
+import { pageMeta } from "@/lib/site";
 
 type O = string | undefined;
 type GallerySearch = { q?: O; type?: O; series?: O; character?: O; tag?: O; orientation?: O; resolution?: O; sort?: O };
@@ -14,16 +15,7 @@ export const Route = createFileRoute("/gallery")({
     q: str(s["q"]), type: str(s["type"]), series: str(s["series"]), character: str(s["character"]),
     tag: str(s["tag"]), orientation: str(s["orientation"]), resolution: str(s["resolution"]), sort: str(s["sort"]),
   }),
-  head: () => ({
-    meta: [
-      { title: "Gallery — Artsstory" },
-      { name: "description", content: "Explore the full Artsstory collection: filter anime art by series, character, tag, orientation and resolution." },
-      { property: "og:title", content: "Gallery — Artsstory" },
-      { property: "og:description", content: "Explore and filter curated anime art." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: () => pageMeta({ title: "Gallery", description: "Explore the full Artsstory collection: filter anime art by series, character, tag, orientation and resolution.", path: "/gallery" }),
   component: GalleryPage,
 });
 
@@ -58,6 +50,13 @@ function GalleryPage() {
   const navigate = useNavigate({ from: "/gallery" });
   const filters = toFilters(search);
   const set = (patch: Partial<GallerySearch>) => navigate({ search: (prev) => ({ ...prev, ...patch }), replace: true, resetScroll: false });
+  const typing = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const setQuery = (q: string, now = false) => {
+    clearTimeout(typing.current);
+    const apply = () => set({ q: q.trim() || undefined });
+    if (now) apply(); else typing.current = setTimeout(apply, 250);
+  };
+  useEffect(() => () => clearTimeout(typing.current), []);
 
   const [limit, setLimit] = useState(PAGE);
   const [loading, setLoading] = useState(false);
@@ -92,7 +91,7 @@ function GalleryPage() {
               <Chip active={filters.type === "image"} onClick={() => set({ type: "image" })}>Images</Chip>
               <Chip active={filters.type === "video"} onClick={() => set({ type: "video" })}>Videos</Chip>
             </div>
-            <SearchPill key={search.q ?? ""} initial={search.q ?? ""} className="lg:w-80" onQuery={(q) => set({ q: q || undefined })} />
+            <SearchPill initial={search.q ?? ""} className="lg:w-80" onQuery={(q) => setQuery(q)} onSubmitQuery={(q) => setQuery(q, true)} />
           </div>
           <div className="no-scrollbar mt-3 flex gap-2 overflow-x-auto pb-1">
             <Select label="Series" value={search.series} onChange={(v) => set({ series: v })} options={series.map((s) => ({ value: s.slug, label: s.name }))} />

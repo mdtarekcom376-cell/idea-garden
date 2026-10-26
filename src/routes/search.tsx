@@ -3,19 +3,11 @@ import { queryArtworks, series, characters, tags } from "@/data";
 import { MasonryGrid } from "@/components/art";
 import { EmptyState, PageHero, SectionHeading } from "@/components/kit";
 import { SearchPill } from "@/components/SearchPill";
+import { pageMeta } from "@/lib/site";
 
 export const Route = createFileRoute("/search")({
   validateSearch: (s: Record<string, unknown>): { q?: string } => (typeof s["q"] === "string" ? { q: s["q"] } : {}),
-  head: () => ({
-    meta: [
-      { title: "Search — Artsstory" },
-      { name: "description", content: "Search curated anime art by title, series, character, artist or tag." },
-      { property: "og:title", content: "Search — Artsstory" },
-      { property: "og:description", content: "Find anime art on Artsstory." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () => pageMeta({ title: "Search", description: "Search curated anime art by title, series, character, artist or tag.", path: "/search" }),
   component: SearchPage,
 });
 

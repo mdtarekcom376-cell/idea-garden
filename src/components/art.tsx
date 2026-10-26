@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Heart, Bookmark, Play, X, ChevronLeft, ChevronRight, Download, Share2, ExternalLink, ZoomIn, ZoomOut } from "lucide-react";
 import { toast } from "sonner";
 import { type Artwork, getSeries, getCharacter, resolutionOf } from "@/data";
@@ -9,14 +9,21 @@ import { t, useT } from "@/lib/i18n";
 import { VideoPlayer, VideoTileMedia } from "@/components/video";
 import { ease } from "@/components/kit";
 import { spring } from "@/components/motion";
-import { petalBurst } from "@/components/effects";
+import { lockScroll, petalBurst } from "@/components/effects";
 import { useMotionValue, useSpring, useTransform } from "motion/react";
 
 export async function shareArtwork(a: Artwork) {
   const url = `${window.location.origin}/art/${a.slug}`;
-  if (navigator.share) { try { await navigator.share({ title: a.title, url }); return; } catch { /* cancelled */ } }
-  await navigator.clipboard?.writeText(url);
-  toast.success(t("art.linkCopied"));
+  if (navigator.share) {
+    try { await navigator.share({ title: a.title, url }); return; }
+    catch (e) { if ((e as DOMException)?.name === "AbortError") return; }
+  }
+  try {
+    await navigator.clipboard.writeText(url);
+    toast.success(t("art.linkCopied"));
+  } catch {
+    toast(url);
+  }
 }
 
 export function LikeButton({ a, size = "sm" }: { a: Artwork; size?: "sm" | "lg" }) {
@@ -112,7 +119,7 @@ export function MetaPanel({ a }: { a: Artwork }) {
     <div>
       {s && <Link to="/series/$slug" params={{ slug: s.slug }} className="text-xs uppercase tracking-widest text-primary hover:underline">{s.name}</Link>}
       <h2 className="mt-2 text-4xl leading-tight">{a.title}</h2>
-      <a href={a.credit_url} target="_blank" rel="noreferrer" className="font-script inline-flex items-center gap-1 text-2xl text-primary">
+      <a href={a.credit_url} target="_blank" rel="noopener noreferrer nofollow" className="font-script inline-flex items-center gap-1 text-2xl text-primary">
         {t("art.by", { name: a.credit_name })} <ExternalLink className="h-3.5 w-3.5" />
       </a>
       <p className="mt-4 text-sm text-muted-foreground">{a.description}</p>
@@ -133,7 +140,9 @@ export function MetaPanel({ a }: { a: Artwork }) {
         <LikeButton a={a} size="lg" />
         <SaveButton a={a} size="lg" />
         <button onClick={() => shareArtwork(a)} aria-label={t("art.share")} className="icon-btn icon-tip"><Share2 className="h-4 w-4" /></button>
-        <a href={a.src} download={`${a.slug}.jpg`} className="btn-primary btn-shine btn-arrow flex-1"><Download className="h-4 w-4" /> {t("art.download")}</a>
+        {a.video
+          ? <a href={a.video.sources[0]!.src} target="_blank" rel="noopener noreferrer" className="btn-primary btn-shine btn-arrow flex-1"><Download className="h-4 w-4" /> {t("art.download")}</a>
+          : <a href={a.src} download={`${a.slug}.jpg`} className="btn-primary btn-shine btn-arrow flex-1"><Download className="h-4 w-4" /> {t("art.download")}</a>}
       </div>
     </div>
   );
@@ -163,21 +172,37 @@ export function ZoomImage({ a, layout = true }: { a: Artwork; layout?: boolean }
 function Viewer({ items, index, setIndex }: { items: Artwork[]; index: number | null; setIndex: (i: number | null) => void }) {
   const a = index === null ? null : items[index];
   const go = (d: number) => index !== null && setIndex((index + d + items.length) % items.length);
+  const isOpen = index !== null;
+  const nav = useRef({ go, setIndex });
+  nav.current = { go, setIndex };
+
+  // Lock scroll and restore focus to the opening card once per open/close, not per render.
   useEffect(() => {
-    if (index === null) return;
+    if (!isOpen) return;
+    const opener = document.activeElement as HTMLElement | null;
+    const unlock = lockScroll();
+    return () => { unlock(); opener?.focus?.({ preventScroll: true }); };
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
     const k = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIndex(null);
-      if (e.key === "ArrowRight") go(1);
-      if (e.key === "ArrowLeft") go(-1);
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      if (e.key === "Escape") nav.current.setIndex(null);
+      if (e.key === "ArrowRight") nav.current.go(1);
+      if (e.key === "ArrowLeft") nav.current.go(-1);
     };
-    document.body.style.overflow = "hidden";
     window.addEventListener("keydown", k);
-    return () => { window.removeEventListener("keydown", k); document.body.style.overflow = ""; };
-  });
+    return () => window.removeEventListener("keydown", k);
+  }, [isOpen]);
+
+  // Close if the list shrinks under the open index (e.g. un-saving on the Saved page).
+  useEffect(() => { if (index !== null && index >= items.length) setIndex(items.length ? items.length - 1 : null); }, [index, items.length, setIndex]);
   return (
     <AnimatePresence>
       {a && (
-        <motion.div role="dialog" aria-modal aria-label={a.title} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[60] flex flex-col overflow-y-auto bg-overlay/90 backdrop-blur-md md:flex-row md:overflow-hidden">
+        <motion.div role="dialog" aria-modal="true" aria-label={a.title} tabIndex={-1} ref={(el) => { if (el && !el.contains(document.activeElement)) el.focus({ preventScroll: true }); }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[60] flex flex-col overflow-y-auto overscroll-contain bg-overlay/90 outline-none backdrop-blur-md md:flex-row md:overflow-hidden">
           <motion.div
             className="relative flex h-[62vh] shrink-0 items-center justify-center p-4 md:h-auto md:flex-1 md:p-10"
             onClick={() => setIndex(null)}
@@ -185,11 +210,13 @@ function Viewer({ items, index, setIndex }: { items: Artwork[]; index: number | 
             onDragEnd={(_, info) => { if (info.offset.x < -80) go(1); else if (info.offset.x > 80) go(-1); }}
           >
             <ZoomImage key={a.id} a={a} />
+            <button aria-label={t("art.close")} onClick={(e) => { e.stopPropagation(); setIndex(null); }} className="icon-btn-glass absolute right-3 top-3 md:hidden"><X className="h-4 w-4" /></button>
+            <span className="badge-glass absolute left-3 top-4 tabular-nums md:left-6 md:top-6">{index! + 1} / {items.length}</span>
             <button aria-label={t("art.prev")} onClick={(e) => { e.stopPropagation(); go(-1); }} className="icon-btn-glass icon-tip absolute left-3 top-1/2 -translate-y-1/2"><ChevronLeft className="h-5 w-5" /></button>
             <button aria-label={t("art.next")} onClick={(e) => { e.stopPropagation(); go(1); }} className="icon-btn-glass icon-tip absolute right-3 top-1/2 -translate-y-1/2"><ChevronRight className="h-5 w-5" /></button>
           </motion.div>
           <motion.aside initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ ease, duration: 0.5 }} className="relative w-full bg-card p-6 md:w-[26rem] md:overflow-y-auto md:p-8">
-            <button aria-label={t("art.close")} autoFocus onClick={() => setIndex(null)} className="icon-btn icon-tip absolute right-4 top-4"><X className="h-4 w-4" /></button>
+            <button aria-label={t("art.close")} onClick={() => setIndex(null)} className="icon-btn icon-tip absolute right-4 top-4 max-md:hidden"><X className="h-4 w-4" /></button>
             <MetaPanel a={a} />
             <Link to="/art/$slug" params={{ slug: a.slug }} className="mt-6 inline-flex text-sm text-primary hover:underline">{t("art.openFull")}</Link>
           </motion.aside>

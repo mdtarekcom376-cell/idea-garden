@@ -1,18 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { FadeUp, PageHero, SectionHeading } from "@/components/kit";
 import { artworks } from "@/data";
+import { pageMeta } from "@/lib/site";
 
 export const Route = createFileRoute("/about")({
-  head: () => ({
-    meta: [
-      { title: "About — Artsstory" },
-      { name: "description", content: "Artsstory is a small team curating high-quality, credited anime art. Our story, mission and team." },
-      { property: "og:title", content: "About — Artsstory" },
-      { property: "og:description", content: "A small team curating credited anime art." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () => pageMeta({ title: "About", description: "Artsstory is a small team curating high-quality, credited anime art. Our story, mission and team.", path: "/about" }),
   component: About,
 });
 
