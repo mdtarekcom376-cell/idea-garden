@@ -38,3 +38,4 @@ Set these environment variables in the Vercel project (see `.env.example`):
 | `VITE_SOCIAL_INSTAGRAM`, `VITE_SOCIAL_TWITTER`, `VITE_SOCIAL_YOUTUBE` | Optional social profile links; icons are hidden when empty |
 
 Checks before shipping: `npx tsc --noEmit`, `npm test`, `npm run build`.
+
